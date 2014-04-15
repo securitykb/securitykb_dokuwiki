@@ -33,6 +33,7 @@
 /lib/tpl/*
 !/lib/tpl/default
 !/lib/tpl/dokuwiki
+!/lib/tpl/securitykb
 !/lib/tpl/index.php
 /lib/plugins/*
 !/lib/plugins/authad
