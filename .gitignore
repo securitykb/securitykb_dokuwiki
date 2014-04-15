@@ -49,6 +49,7 @@
 !/lib/plugins/revert
 !/lib/plugins/safefnrecode
 !/lib/plugins/testing
+!/lib/plugins/todo
 !/lib/plugins/usermanager
 !/lib/plugins/action.php
 !/lib/plugins/admin.php
