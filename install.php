@@ -69,14 +69,14 @@ header('Content-Type: text/html; charset=utf-8');
     <meta charset="utf-8" />
     <title><?php echo $lang['i_installer']?></title>
     <style type="text/css">
-        body { width: 90%; margin: 0 auto; font: 84% Verdana, Helvetica, Arial, sans-serif; }
+        body { background-color: #222; color: #eee; width: 90%; margin: 0 auto; font: 84% Verdana, Helvetica, Arial, sans-serif; }
         img { border: none }
         br.cl { clear:both; }
-        code { font-size: 110%; color: #800000; }
+        code { font-size: 110%; color: #f90; }
         fieldset { border: none }
         label { display: block; margin-top: 0.5em; }
         select.text, input.text { width: 30em; margin: 0 0.5em; }
-        a {text-decoration: none}
+        a {color: #09f; text-decoration: none}
     </style>
     <script type="text/javascript">
         function acltoggle(){
@@ -98,7 +98,7 @@ header('Content-Type: text/html; charset=utf-8');
 </head>
 <body style="">
     <h1 style="float:left">
-        <img src="lib/exe/fetch.php?media=wiki:dokuwiki-128.png"
+        <img src="lib/exe/fetch.php?media=wiki:kb_logo.png"
              style="vertical-align: middle;" alt="" height="64" width="64" />
         <?php echo $lang['i_installer']?>
     </h1>
@@ -109,8 +109,8 @@ header('Content-Type: text/html; charset=utf-8');
 
     <div style="float: right; width: 34%;">
         <?php
-            if(@file_exists(DOKU_INC.'inc/lang/'.$LC.'/install.html')){
-                include(DOKU_INC.'inc/lang/'.$LC.'/install.html');
+            if(@file_exists(DOKU_INC.'inc/lang/'.$LC.'/kb_install.html')){
+                include(DOKU_INC.'inc/lang/'.$LC.'/kb_install.html');
             }else{
                 print "<div lang=\"en\" dir=\"ltr\">\n";
                 include(DOKU_INC.'inc/lang/en/install.html');
@@ -169,15 +169,17 @@ function print_form($d){
     $d = array_map('htmlspecialchars',$d);
 
     if(!isset($d['acl'])) $d['acl']=1;
-    if(!isset($d['pop'])) $d['pop']=1;
+    if(!isset($d['pop'])) $d['pop']=0;
 
     ?>
     <form action="" method="post">
     <input type="hidden" name="l" value="<?php echo $LC ?>" />
     <fieldset>
-        <label for="title"><?php echo $lang['i_wikiname']?>
+        <label for="title"><?php echo $lang['i_wikiname']?></label>
         <input type="text" name="d[title]" id="title" value="<?php echo $d['title'] ?>" style="width: 20em;" />
-        </label>
+
+        <label for="tagline"><?php echo $lang['i_tagline']?></label>
+        <input type="text" name="d[tagline]" id="tagline" value="<?php echo $d['tagline'] ?>" style="width: 20em;" />
 
         <fieldset style="margin-top: 1em;">
             <label for="acl">
@@ -218,11 +220,11 @@ function print_form($d){
             <p><?php echo $lang['i_license']?></p>
             <?php
             array_push($license,array('name' => $lang['i_license_none'], 'url'=>''));
-            if(empty($d['license'])) $d['license'] = 'cc-by-sa';
+            if(empty($d['license'])) $d['license'] = '0';
             foreach($license as $key => $lic){
                 echo '<label for="lic_'.$key.'">';
                 echo '<input type="radio" name="d[license]" value="'.htmlspecialchars($key).'" id="lic_'.$key.'"'.
-                     (($d['license'] === $key)?' checked="checked"':'').'>';
+                     (($d['license'] == $key)?' checked="checked"':'').'>';
                 echo htmlspecialchars($lic['name']);
                 if($lic['url']) echo ' <a href="'.$lic['url'].'" target="_blank"><sup>[?]</sup></a>';
                 echo '</label>';
@@ -266,16 +268,23 @@ function print_retry() {
  */
 function check_data(&$d){
     static $form_default = array(
-        'title'     => '',
-        'acl'       => '1',
-        'superuser' => '',
-        'fullname'  => '',
-        'email'     => '',
-        'password'  => '',
-        'confirm'   => '',
-        'policy'    => '0',
-        'allowreg'  => '0',
-        'license'   => 'cc-by-sa'
+        'title'       => '',
+        'acl'         => '1',
+        'superuser'   => '',
+        'fullname'    => '',
+        'email'       => '',
+        'password'    => '',
+        'confirm'     => '',
+        'policy'      => '2',
+        'allowreg'    => '0',
+        'license'     => '0',
+        'pop'         => '0',
+        'tagline'     => '',
+        'template'    => 'securitykb',
+        'breadcrumbs' => '0',
+        'youarehere'  => '1',
+        'updatecheck' => '0',
+        'dnslookups'  => '0'
     );
     global $lang;
     global $error;
@@ -318,10 +327,6 @@ function check_data(&$d){
                 $error[] = sprintf($lang['i_badval'],$lang['fullname']);
                 $ok      = false;
             }
-            if(empty($d['email']) || strstr($d['email'],':') || !strstr($d['email'],'@')){
-                $error[] = sprintf($lang['i_badval'],$lang['email']);
-                $ok      = false;
-            }
         }
     }
     $d = array_merge($form_default, $d);
@@ -352,6 +357,17 @@ EOT;
     $output .= '$conf[\'title\'] = \''.addslashes($d['title'])."';\n";
     $output .= '$conf[\'lang\'] = \''.addslashes($LC)."';\n";
     $output .= '$conf[\'license\'] = \''.addslashes($d['license'])."';\n";
+
+    // Pentest Notes Wiki Settings
+    $output .= '$conf[\'tagline\'] = \''.addslashes($d['tagline'])."';\n";
+    $output .= '$conf[\'template\'] = \''.addslashes($d['template'])."';\n";
+    $output .= '$conf[\'tagline\'] = \''.addslashes($d['tagline'])."';\n";                                                                                                                                                                                                        
+    $output .= '$conf[\'breadcrumbs\'] = \''.addslashes($d['breadcrumb'])."';\n";
+    $output .= '$conf[\'youarehere\'] = \''.addslashes($d['youarehere'])."';\n";
+    $output .= '$conf[\'updatecheck\'] = \''.addslashes($d['updatecheck'])."';\n";
+    $output .= '$conf[\'dnslookups\'] = \''.addslashes($d['dnslookups'])."';\n";
+    // End of KB settings
+
     if($d['acl']){
         $output .= '$conf[\'useacl\'] = 1'.";\n";
         $output .= "\$conf['superuser'] = '@admin';\n";
