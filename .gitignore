@@ -42,12 +42,16 @@
 !/lib/plugins/authpgsql
 !/lib/plugins/authplain
 !/lib/plugins/acl
+!/lib/plugins/color
 !/lib/plugins/config
+!/lib/plugins/hidden
 !/lib/plugins/info
 !/lib/plugins/plugin
+!/lib/plugins/pageredirect
 !/lib/plugins/popularity
 !/lib/plugins/revert
 !/lib/plugins/safefnrecode
+!/lib/plugins/sortablejs
 !/lib/plugins/testing
 !/lib/plugins/todo
 !/lib/plugins/usermanager
