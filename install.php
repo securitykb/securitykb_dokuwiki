@@ -98,8 +98,7 @@ header('Content-Type: text/html; charset=utf-8');
 </head>
 <body style="">
     <h1 style="float:left">
-        <img src="lib/exe/fetch.php?media=wiki:kb_logo.png"
-             style="vertical-align: middle;" alt="" height="64" width="64" />
+        <img src="lib/images/kb_logo.png" style="vertical-align: middle;" alt="" height="64" width="64" />
         <?php echo $lang['i_installer']?>
     </h1>
     <div style="float:right; margin: 1em;">

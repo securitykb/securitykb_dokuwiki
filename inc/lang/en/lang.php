@@ -361,4 +361,9 @@ $lang['currentns']             = 'Current namespace';
 $lang['searchresult']          = 'Search Result';
 $lang['plainhtml']             = 'Plain HTML';
 $lang['wikimarkup']            = 'Wiki Markup';
+
+// Added for KB Wiki
+$lang['i_installer']           = 'DokuWiki Pentest Notes Installer';
+$lang['i_wikiname']            = 'Engagement Name';
+$lang['i_tagline']             = 'Enagement ID';
 //Setup VIM: ex: et ts=2 :
