@@ -1,0 +1,16 @@
+
+===== Pre-Engagement ======
+  * <todo>Confirm that the Truecrypt passphrase for the wiki superuser has been added to the Team keystore</todo>
+  * <todo>Complete the engagement information page</todo> - [[:start|Go]]
+  * <todo>Upload pre-engagement documents to the wiki</todo> - [[this>doku.php?id=tasks:pre-engagement&do=media&ns=tasks|Go]] (e.g. Signed statement of work, previous vulnerability scan results, etc...)
+  * <todo>Create a page for each in-scope host</todo> - [[notes:targets:hosts:example.host|Go]] (change the last part of the URL to the actual hostname or IP)
+
+===== Pre-Engagement Call =======
+  * <todo>Get answers to all pre-engagement questions</todo> - [[notes:pre-engagement|Go]]
+  * <todo>Ask about schedule conflicts for the Post-Engagement Call</todo>
+  * <todo> Confirm emergency contact information is correct</todo> - [[:start|Go]]
+  * <todo>Setup Pre-shared passphrase for final report and update the keystore</todo>
+
+----
+===== References =====
+^Knowledge Base (KB) |Coming Soon|

@@ -1,0 +1,24 @@
+===== Information Gathering Tasks =====
+  * <todo>Gather and review public information on the Client (e.g. Google, DNS Records, Maltego, Shodan, Recon-NG, etc...)</todo>
+  * <todo>Create an entry on the target notes page for each high-profile host</todo> - [[notes:target_notes#Hosts to Review|Go]]
+  * <todo>Confirm that the Pre-Engagement and Target notes have been updated to reflect current information</todo> - [[Notes:Pre-Engagement|Pre-Engagement]], [[notes:target_notes#Hosts to Review|Target]]
+
+===== Target Development Tasks =====
+  * <todo>Run network host and service discovery scans</todo>
+  * <todo>Run automated vulnerability scans and scripts</todo>
+  * <todo>Import scan results into the wiki</todo>
+  * Add a task to relevant host pages and update the [[notes:target notes|target notes page]] if a host:
+    * <todo>Has at least one known "Critical" or "High" vulnerability</todo>
+    * <todo>Is running a service with publicly available exploit code</todo>
+    * <todo>Is running a 'home grown' service</todo>
+    * <todo>Is running a service that is End-Of-Life</todo>
+  * <todo>View all services that utilize the HTTP and HTTPS protocols in a browser (or equivalent). Create a task to review each interesting result on the relevant host page.</todo>
+    * Upload resulting screenshots to the wiki under the [[this>doku.php?id=tasks:engagement&do=media&ns=tasks|tasks namespace]]
+
+===== Exploitation Tasks =====
+  * <todo>Manually review all target tasks created from above</todo>
+  * <todo>Try Harder</todo>
+
+----
+===== References =====
+^Knowledge Base (KB) |Coming Soon|

@@ -1,0 +1,30 @@
+{{tag>[host]}}
+====== Host Details ======
+^Host Name   |-|
+^Address     |-|
+^OS          |-|
+^Flavor      |-|
+^Purpose     |-|
+^Mac Address |-|
+^Comments    |-|
+
+====== To Review ======
+  - <todo>Add review tasks here (e.g. vulnerability scan results)</todo>
+
+====== Host Based Timeline ======
+  * Log of actions taken against the host here. Use timestamps.
+
+====== Screenshots ======
+^ Description  ^ Screenshot ^
+|-|-|
+
+====== Services ======
+<sortable>
+^ port ^ proto ^ name ^ state ^ info ^ comments ^
+|-|-|-|-|-|-|
+</sortable>
+
+
+====== Loot ======
+^ File ^ Description ^
+|-|-|

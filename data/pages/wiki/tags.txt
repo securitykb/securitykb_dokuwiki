@@ -1,0 +1,24 @@
+This framework makes use off the [[https://www.dokuwiki.org/plugin:tag|tag]] plugin. Each namespace in the notes section lists pages with relevant tags. Using other tags can help the tester find which hosts meet a certain criteria. Here are some example tags that can be used 
+
+====== Tags Reference ======
+  Highest System Access Level:
+    ADM = Admin access on the system
+    USR = Unprivileged User on the system
+  Highest Service Access Level:
+    ASV
+    USV
+  Initial System Compromise Methods:
+    RE    = Remote Exploit
+    DP    = Default Password (Used to gain access to host or service)
+    CC    = Compromised Credential
+    CH    = Compromised Hash (Pass The Hash or Cracked Cred)
+    PCC   = Previously Compromised Credential (prior to engagement)
+  Sensitive Information Found on Host:
+    PASS  = Passwords or hashes
+    PAN   = Target held Primary Account Numbers
+    NPI   = Target held No-Public Information
+    SRC   = Target held proprietary source code
+
+
+====== Tags in Use ======
+{{count>[+]}}

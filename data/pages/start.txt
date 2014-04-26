@@ -1,0 +1,34 @@
+====== Engagement Info ======
+  * Primary tester:
+  * Secondary Tester:
+  * Test Type: 
+  * Pre-Engagement call date:
+  * Engagement start:
+  * Engagement end:
+  * Report due:
+  * Post-Engagement call:
+
+
+====== Client Contact Info ======
+  * **Primary**
+    * Name: [[name@example.com|Name]]
+    * Title: 
+    * Daytime Phone: 
+    * Afterhours Phone: 
+  * **Secondary**
+    * Name: [[name@example.com|Name]]
+    * Title: 
+    * Daytime Phone: 
+    * Afterhours Phone: 
+
+====== Emergency Contact Info ======
+  * **Primary**
+    * Name: [[name@example.com|Name]]
+    * Title: 
+    * Daytime Phone: 
+    * Afterhours Phone: 
+  * **Secondary**
+    * Name: [[name@example.com|Name]]
+    * Title: 
+    * Daytime Phone: 
+    * Afterhours Phone: 

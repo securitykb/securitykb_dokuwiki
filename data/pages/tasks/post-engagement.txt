@@ -1,0 +1,31 @@
+===== Reporting Tasks =====
+  * <todo>Update vulnerability tracking system with newly discovered vulnerabilities</todo> 
+  * <todo>Get most current report template</todo>
+  * <todo>Complete the report</todo>
+  * <todo>Send report to QA</todo>
+  * <todo>Fix all QA findings</todo>
+  * <todo>Encrypt the final report with the pre-shared password</todo>
+      * <todo>Make sure that QA markups or comments are not displayed in the finalized report</todo>
+  * <todo>Send the report to the Client</todo>
+
+
+===== Post-Engagement Call Tasks =====
+  * <todo>Setup and/or confirm Post-Engagement call with the Client</todo>
+  * <todo>Hold the Post-Engagement call with the Client</todo>
+    * <todo>Review the full pentest report</todo>
+    * <todo>Ask if the Client has any questions about the pentest</todo>
+    * <todo>Ask if the Client has any other questions</todo>
+    * <todo>Ask the Client if they know of any issues missed by the testers</todo>
+    * <todo>Set Followup Expectations</todo>
+    * <todo> THANK THE CLIENT FOR THEIR WORK</todo>
+
+===== Cleanup Tasks =====
+  * <todo>Confirm that all files from the engagement have been uploaded to the wiki</todo>
+  * <todo>Confirm that the Team keystore contains all necessary credentials for the engagement</todo>
+  * ...
+  * Unmount and then copy the Truecrypt volume to an external hard drive for offline storage
+  * Securely delete the Truecrypt volume and any test data on the local system (e.g. with shred)
+
+----
+===== References =====
+^Knowledge Base (KB) |Coming Soon|

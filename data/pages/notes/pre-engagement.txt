@@ -1,0 +1,18 @@
+===== Pre-Engagement Research =====
+==== Products and Services Offered  By Client ====
+==== Possible Types of Sensitive Data Client Maintains ====
+==== High Value Flags ====
+
+===== Pre-Engagement Call Notes =====
+==== Questions To Ask ====
+  * Are there systems that 'tip-over' easily?
+  * Are there boxes that would adversely affect operations if it were to go down?
+  * Are there any periods of high traffic to be aware of?
+  * Are there any known down-times scheduled?
+  * What systems do you feel are the safest?
+  * What systems do you feel are the weakest?
+
+-----
+===== Public Information of Note ======
+^ Link ^ Notes ^
+|       |      |

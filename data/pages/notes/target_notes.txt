@@ -1,0 +1,17 @@
+====== Hosts To Review ======
+^Hostname ^ IP ^OS ^ Notes ^
+|-|-|-|-|
+
+====== Compromised Accounts ======
+^ user ^ pass ^ context ^ active ^ Comments ^
+|-|-|-|<todo>:)</todo>|-|
+
+====== Compromised Data ======
+^Data Type ^ Location ^ Comments ^
+|-|-|-|
+
+===== Reference =====
+  * [[notes:targets:hosts:]]
+  * [[notes:targets:persons:]]
+  * [[notes:targets:hosts:services:]]
+  * [[wiki:tags]]

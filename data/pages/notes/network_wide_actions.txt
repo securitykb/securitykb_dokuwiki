@@ -1,0 +1,12 @@
+====== External Without Creds ======
+  * Add notes here
+
+====== External With Creds ======
+  * Add notes here
+
+====== Internal Without Creds ======
+  * Add notes here
+
+
+====== Internal With Creds ======
+  * Add notes here
