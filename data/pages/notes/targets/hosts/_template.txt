@@ -1,5 +1,5 @@
 {{tag>[host]}}
-====== Host Details ======
+====== [Hostname] Details ======
 ^Host Name   |-|
 ^Address     |-|
 ^OS          |-|
