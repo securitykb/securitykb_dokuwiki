@@ -1,9 +1,9 @@
 SecurityKB Dokuwiki
 ===================
 
-Instalation
+Installation
 ---
-**Important Security Note:** When storing sensitive data in this fork of Dokuwiki, make sure that the webroot is not accessible by other systems on the same network. This can be done by telling your web server to only use a local interface or by setting firewall rules. Additional security can be added by setting the ACL Policy setting to 'Closed Wiki'. If you want to be even more careful, add a .htaccess file to prevent access from untrusted source IPs.
+**Important Security Note:** When storing sensitive data in this framework, it is best to limit access to the web server. This can be done by telling your web server to only bind to local interface or by setting local firewall rules (or both). Additional security can be added by setting the ACL Policy setting to 'Closed Wiki'. If you want to be even more careful, add a .htaccess file to prevent access from untrusted source addresses.
 
 ### Using Truecrypt (Optional)
 There are a lot of reasons Dokuwiki was chosen to be the basis for the framework, but one of the biggest considerations was Dokuwiki's ability to work without a database. This allows a tester to store all the engagement notes, screenshots, and loot in a Truecrypt volume. To create a Truecrypt volume just run the following (from a Linux box).
