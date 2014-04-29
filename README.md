@@ -76,6 +76,7 @@ See COPYING and file headers for license info
 [DokuWiki User Forum]: https://forum.dokuwiki.org/
 [color]: https://www.dokuwiki.org/plugin:color
 [hidden]: https://www.dokuwiki.org/plugin:hidden
+[pagelist]: https://www.dokuwiki.org/plugin:pagelist
 [pageredirect]: https://www.dokuwiki.org/plugin:pageredirect
 [sortablejs]: https://www.dokuwiki.org/plugin:sortablejs
 [tag]: https://www.dokuwiki.org/plugin:tag
