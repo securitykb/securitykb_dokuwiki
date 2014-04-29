@@ -43,12 +43,15 @@
 !/lib/plugins/hidden
 !/lib/plugins/info
 !/lib/plugins/plugin
+!/lib/plugins/pagelist
 !/lib/plugins/pageredirect
 !/lib/plugins/popularity
 !/lib/plugins/revert
 !/lib/plugins/safefnrecode
 !/lib/plugins/sortablejs
+!/lib/plugins/tag
 !/lib/plugins/testing
+!/lib/plugins/timestamp
 !/lib/plugins/todo
 !/lib/plugins/usermanager
 !/lib/plugins/action.php
