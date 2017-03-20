@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Ziegler Gábor <gziegler@freemail.hu>
  * @author Sandor TIHANYI <stihanyi+dw@gmail.com>
  * @author Siaynoq Mage <siaynoqmage@gmail.com>
@@ -12,6 +12,8 @@
  * @author David Szabo <szabo.david@gyumolcstarhely.hu>
  * @author Marton Sebok <sebokmarton@gmail.com>
  * @author Serenity87HUN <anikototh87@gmail.com>
+ * @author Marina Vladi <deldadam@gmail.com>
+ * @author Mátyás Jani <jzombi@gmail.com>
  */
 $lang['encoding']              = 'utf-8';
 $lang['direction']             = 'ltr';
@@ -43,7 +45,6 @@ $lang['btn_update']            = 'Frissítés';
 $lang['btn_delete']            = 'Törlés';
 $lang['btn_back']              = 'Vissza';
 $lang['btn_backlink']          = 'Hivatkozások';
-$lang['btn_backtomedia']       = 'Vissza a médiafájlok kezeléséhez';
 $lang['btn_subscribe']         = 'Feliratkozás az oldalváltozásokra';
 $lang['btn_profile']           = 'Személyes beállítások';
 $lang['btn_reset']             = 'Alaphelyzet';
@@ -56,7 +57,9 @@ $lang['btn_register']          = 'Regisztráció';
 $lang['btn_apply']             = 'Alkalmaz';
 $lang['btn_media']             = 'Médiakezelő';
 $lang['btn_deleteuser']        = 'Felhasználói fiókom eltávolítása';
-$lang['loggedinas']            = 'Belépett felhasználó: ';
+$lang['btn_img_backto']        = 'Vissza %s';
+$lang['btn_mediaManager']      = 'Megtekintés a médiakezelőben';
+$lang['loggedinas']            = 'Belépett felhasználó';
 $lang['user']                  = 'Azonosító';
 $lang['pass']                  = 'Jelszó';
 $lang['newpass']               = 'Új jelszó';
@@ -71,10 +74,12 @@ $lang['badpassconfirm']        = 'Hibás jelszó';
 $lang['minoredit']             = 'Apróbb változások';
 $lang['draftdate']             = 'Piszkozat elmentve:';
 $lang['nosecedit']             = 'Időközben megváltozott az oldal, emiatt a szakasz nem friss. Töltsd újra az egész oldalt!';
+$lang['searchcreatepage']      = 'Ha nem találtad meg amit kerestél, akkor létrehozhatsz egy új oldalt a keresésed alapján \'\'Az oldal szerkesztése\'\' gombbal.';
 $lang['regmissing']            = 'Sajnáljuk, az összes mezőt ki kell töltened.';
 $lang['reguexists']            = 'Sajnáljuk, ilyen azonosítójú felhasználónk már van.';
 $lang['regsuccess']            = 'A felhasználói azonosítót létrehoztuk. A jelszót postáztuk.';
 $lang['regsuccess2']           = 'A felhasználói azonosítót létrehoztuk.';
+$lang['regfail']               = 'A felhasználó létrehozása sikertelen.';
 $lang['regmailfail']           = 'Úgy tűnik hiba történt a jelszó postázása során. Kérjük lépj kapcsolatba az Adminisztrátorokkal!';
 $lang['regbadmail']            = 'A megadott e-mail cím érvénytelennek tűnik. Ha úgy gondolod ez hiba, lépj kapcsolatba az Adminisztrátorokkal!';
 $lang['regbadpass']            = 'A két megadott jelszó nem egyezik, próbáld újra!';
@@ -89,6 +94,7 @@ $lang['profdeleteuser']        = 'Felhasználói fiók törlése';
 $lang['profdeleted']           = 'Felhasználói fiókodat eltávolítottuk erről a wiki-ről.';
 $lang['profconfdelete']        = 'Szeretném eltávolítani a felhasználói fiókomat erről a wikiről. <br/> Ez a cselekvés nem visszavonható.';
 $lang['profconfdeletemissing'] = 'A megerősítő négyzet nincs bepipálva';
+$lang['proffail']              = 'A profil frissítése sikertelen.';
 $lang['pwdforget']             = 'Elfelejtetted a jelszavad? Itt kérhetsz újat';
 $lang['resendna']              = 'Ez a wiki nem támogatja a jelszó újraküldést.';
 $lang['resendpwd']             = 'Új jelszó beállítása a következőhöz:';
@@ -101,8 +107,8 @@ $lang['license']               = 'Hacsak máshol nincs egyéb rendelkezés, ezen
 $lang['licenseok']             = 'Megjegyzés: az oldal szerkesztésével elfogadja, hogy a tartalom a következő licenc alatt lesz elérhető:';
 $lang['searchmedia']           = 'Keresett fájl neve:';
 $lang['searchmedia_in']        = 'Keresés a következőben: %s';
-$lang['txt_upload']            = 'Válaszd ki a feltöltendő fájlt';
-$lang['txt_filename']          = 'Feltöltési név (elhagyható)';
+$lang['txt_upload']            = 'Válaszd ki a feltöltendő fájlt:';
+$lang['txt_filename']          = 'Feltöltési név (elhagyható):';
 $lang['txt_overwrt']           = 'Létező fájl felülírása';
 $lang['maxuploadsize']         = 'Maximum %s méretű fájlokat tölthetsz fel.';
 $lang['lockedby']              = 'Jelenleg zárolta:';
@@ -152,7 +158,6 @@ $lang['js']['media_overwrt']   = 'Meglévő fájlok felülírása';
 $lang['rssfailed']             = 'Hiba történt a hírfolyam betöltésekor: ';
 $lang['nothingfound']          = 'Üres mappa.';
 $lang['mediaselect']           = 'Médiafájl kiválasztása';
-$lang['fileupload']            = 'Médiafájl feltöltése';
 $lang['uploadsucc']            = 'Sikeres feltöltés';
 $lang['uploadfail']            = 'A feltöltés nem sikerült. Talán rosszak a jogosultságok?';
 $lang['uploadwrong']           = 'A feltöltés megtagadva. Ez a fájlkiterjesztés tiltott.';
@@ -186,10 +191,15 @@ $lang['difflink']              = 'Összehasonlító nézet linkje';
 $lang['diff_type']             = 'Összehasonlítás módja:';
 $lang['diff_inline']           = 'Sorok között';
 $lang['diff_side']             = 'Egymás mellett';
+$lang['diffprevrev']           = 'Előző változat';
+$lang['diffnextrev']           = 'Következő változat';
+$lang['difflastrev']           = 'Utolsó változat';
+$lang['diffbothprevrev']       = 'Előző változat mindkét oldalon';
+$lang['diffbothnextrev']       = 'Következő változat mindkét oldalon';
 $lang['line']                  = 'Sor';
-$lang['breadcrumb']            = 'Nyomvonal';
-$lang['youarehere']            = 'Itt vagy';
-$lang['lastmod']               = 'Utolsó módosítás';
+$lang['breadcrumb']            = 'Nyomvonal:';
+$lang['youarehere']            = 'Itt vagy:';
+$lang['lastmod']               = 'Utolsó módosítás:';
 $lang['by']                    = 'szerkesztette:';
 $lang['deleted']               = 'eltávolítva';
 $lang['created']               = 'létrehozva';
@@ -238,24 +248,21 @@ $lang['qb_sig']                = 'Aláírás beszúrása';
 $lang['qb_smileys']            = 'Smiley-k';
 $lang['qb_chars']              = 'Speciális karakterek';
 $lang['upperns']               = 'ugrás a tartalmazó névtérhez';
-$lang['admin_register']        = 'Új felhasználó';
 $lang['metaedit']              = 'Metaadatok szerkesztése';
 $lang['metasaveerr']           = 'A metaadatok írása nem sikerült';
 $lang['metasaveok']            = 'Metaadatok elmentve';
-$lang['img_backto']            = 'Vissza';
-$lang['img_title']             = 'Cím';
-$lang['img_caption']           = 'Képaláírás';
-$lang['img_date']              = 'Dátum';
-$lang['img_fname']             = 'Fájlnév';
-$lang['img_fsize']             = 'Méret';
-$lang['img_artist']            = 'Készítette';
-$lang['img_copyr']             = 'Szerzői jogok';
-$lang['img_format']            = 'Formátum';
-$lang['img_camera']            = 'Fényképezőgép típusa';
-$lang['img_keywords']          = 'Kulcsszavak';
-$lang['img_width']             = 'Szélesség';
-$lang['img_height']            = 'Magasság';
-$lang['img_manager']           = 'Megtekintés a médiakezelőben';
+$lang['img_title']             = 'Cím:';
+$lang['img_caption']           = 'Képaláírás:';
+$lang['img_date']              = 'Dátum:';
+$lang['img_fname']             = 'Fájlnév:';
+$lang['img_fsize']             = 'Méret:';
+$lang['img_artist']            = 'Készítette:';
+$lang['img_copyr']             = 'Szerzői jogok:';
+$lang['img_format']            = 'Formátum:';
+$lang['img_camera']            = 'Fényképezőgép típusa:';
+$lang['img_keywords']          = 'Kulcsszavak:';
+$lang['img_width']             = 'Szélesség:';
+$lang['img_height']            = 'Magasság:';
 $lang['subscr_subscribe_success'] = '%s hozzáadva az értesítési listához: %s';
 $lang['subscr_subscribe_error'] = 'Hiba történt %s hozzáadásakor az értesítési listához: %s';
 $lang['subscr_subscribe_noaddress'] = 'Nincs e-mail cím megadva az adataidnál, így a rendszer nem tudott hozzáadni az értesítési listához';
@@ -273,7 +280,6 @@ $lang['subscr_style_every']    = 'e-mailt minden változásról';
 $lang['subscr_style_digest']   = 'összefoglaló e-mailt oldalanként (minden %.2f nap)';
 $lang['subscr_style_list']     = 'egy listát a módosított oldalakról a legutóbbi e-mail óta (minden %.2f nap)';
 $lang['authtempfail']          = 'A felhasználó azonosítás átmenetileg nem működik. Ha sokáig így lenne, légy szíves értesítsd az Adminisztrátorokat!';
-$lang['authpwdexpire']         = 'A jelszavad %d nap múlva lejár, hamarosan meg kell változtatnod.';
 $lang['i_chooselang']          = 'Válassz nyelvet';
 $lang['i_installer']           = 'DokuWiki Beállító Varázsló';
 $lang['i_wikiname']            = 'A Wiki neve';
@@ -284,6 +290,7 @@ $lang['i_modified']            = 'Biztonsági okokból ez a Varázsló csak új 
 Csomagold ki újra a fájlokat a letöltött csomagból, vagy nézd meg a teljes <a href="http://dokuwiki.org/install">Dokuwiki telepítési útmutatót</a>.';
 $lang['i_funcna']              = 'A <code>%s</code> PHP funkció nem elérhető. Esetleg a tárhelyszolgáltató letiltotta biztonsági okok miatt?';
 $lang['i_phpver']              = 'A PHP <code>%s</code> verziója alacsonyabb, mint ami szükséges lenne: <code>%s</code>. Frissítsd a PHP-det újabb verzióra!';
+$lang['i_mbfuncoverload']      = 'A DokuWiki futtatásához az mbstring.func_overload opciót ki kell kapcsolni a php.ini-ben.';
 $lang['i_permfail']            = 'A DokiWiki nem tudja írni a <code>%s</code> könyvtárat. Be kell állítanod ehhez a könyvtárhoz a megfelelő jogosultságokat!';
 $lang['i_confexists']          = '<code>%s</code> már létezik.';
 $lang['i_writeerr']            = 'Nem tudom ezt létrehozni: <code>%s</code>. Ellenőrizd a könyvtár/fájl jogosultságokat, és hozd létre az állományt kézzel.';
@@ -295,6 +302,7 @@ $lang['i_policy']              = 'Kezdeti hozzáférési lista házirend';
 $lang['i_pol0']                = 'Nyitott wiki (mindenki olvashatja, írhatja és fájlokat tölthet fel)';
 $lang['i_pol1']                = 'Publikus wiki (mindenki olvashatja, de csak regisztrált felhasználók írhatják és tölthetnek fel fájlokat)';
 $lang['i_pol2']                = 'Zárt wiki (csak regisztrált felhasználók olvashatják, írhatják és tölthetnek fel fájlokat)';
+$lang['i_allowreg']            = 'A felhasználók saját maguk is regisztrálhatnak';
 $lang['i_retry']               = 'Újra';
 $lang['i_license']             = 'Kérlek, válassz licencet a feltöltött tartalomhoz:';
 $lang['i_license_none']        = 'Ne jelenítsen meg licenc információt';
@@ -332,3 +340,12 @@ $lang['media_perm_read']       = 'Sajnáljuk, nincs jogod a fájlok olvasásáho
 $lang['media_perm_upload']     = 'Sajnáljuk, nincs jogod a feltöltéshez.';
 $lang['media_update']          = 'Új verzió feltöltése';
 $lang['media_restore']         = 'Ezen verzió visszaállítása';
+$lang['media_acl_warning']     = 'Ez a lista hiányos lehet a hozzáférési listák (ACL) korlátozásai és a rejtett oldalak miatt.';
+$lang['currentns']             = 'Aktuális névtér';
+$lang['searchresult']          = 'Keresés eredménye';
+$lang['plainhtml']             = 'Sima HTML';
+$lang['wikimarkup']            = 'Wiki-jelölőnyelv';
+$lang['email_signature_text']       = 'Ezt a levelet a DokuWiki generálta
+@DOKUWIKIURL@';
+$lang['page_nonexist_rev']     = 'A(z) %s oldal nem létezik. Később lett létrehozva a(z) <a href="%s">%s</a> helyen.';
+$lang['unable_to_parse_date']  = 'A "%s" paraméter feldolgozása sikertelen.';

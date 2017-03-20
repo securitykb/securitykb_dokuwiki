@@ -17,6 +17,9 @@ class auth_plugin_authplain extends DokuWiki_Auth_Plugin {
     /** @var array filter pattern */
     protected $_pattern = array();
 
+    /** @var bool safe version of preg_split */
+    protected $_pregsplit_safe = false;
+
     /**
      * Constructor
      *
@@ -44,6 +47,8 @@ class auth_plugin_authplain extends DokuWiki_Auth_Plugin {
             $this->cando['getUsers']     = true;
             $this->cando['getUserCount'] = true;
         }
+
+        $this->_pregsplit_safe = version_compare(PCRE_VERSION,'6.7','>=');
     }
 
     /**
@@ -76,11 +81,33 @@ class auth_plugin_authplain extends DokuWiki_Auth_Plugin {
      *
      * @author  Andreas Gohr <andi@splitbrain.org>
      * @param string $user
-     * @return array|bool
+     * @param bool $requireGroups  (optional) ignored by this plugin, grps info always supplied
+     * @return array|false
      */
-    public function getUserData($user) {
+    public function getUserData($user, $requireGroups=true) {
         if($this->users === null) $this->_loadUserData();
         return isset($this->users[$user]) ? $this->users[$user] : false;
+    }
+
+    /**
+     * Creates a string suitable for saving as a line
+     * in the file database
+     * (delimiters escaped, etc.)
+     *
+     * @param string $user
+     * @param string $pass
+     * @param string $name
+     * @param string $mail
+     * @param array  $grps list of groups the user is in
+     * @return string
+     */
+    protected function _createUserLine($user, $pass, $name, $mail, $grps) {
+        $groups   = join(',', $grps);
+        $userline = array($user, $pass, $name, $mail, $groups);
+        $userline = str_replace('\\', '\\\\', $userline); // escape \ as \\
+        $userline = str_replace(':', '\\:', $userline); // escape : as \:
+        $userline = join(':', $userline)."\n";
+        return $userline;
     }
 
     /**
@@ -107,7 +134,10 @@ class auth_plugin_authplain extends DokuWiki_Auth_Plugin {
         global $config_cascade;
 
         // user mustn't already exist
-        if($this->getUserData($user) !== false) return false;
+        if($this->getUserData($user) !== false) {
+            msg($this->getLang('userexists'), -1);
+            return false;
+        }
 
         $pass = auth_cryptPassword($pwd);
 
@@ -115,19 +145,15 @@ class auth_plugin_authplain extends DokuWiki_Auth_Plugin {
         if(!is_array($grps)) $grps = array($conf['defaultgroup']);
 
         // prepare user line
-        $groups   = join(',', $grps);
-        $userline = join(':', array($user, $pass, $name, $mail, $groups))."\n";
+        $userline = $this->_createUserLine($user, $pass, $name, $mail, $grps);
 
-        if(io_saveFile($config_cascade['plainauth.users']['default'], $userline, true)) {
-            $this->users[$user] = compact('pass', 'name', 'mail', 'grps');
-            return $pwd;
+        if(!io_saveFile($config_cascade['plainauth.users']['default'], $userline, true)) {
+            msg($this->getLang('writefail'), -1);
+            return null;
         }
 
-        msg(
-            'The '.$config_cascade['plainauth.users']['default'].
-                ' file is not writable. Please inform the Wiki-Admin', -1
-        );
-        return null;
+        $this->users[$user] = compact('pass', 'name', 'mail', 'grps');
+        return $pwd;
     }
 
     /**
@@ -143,7 +169,17 @@ class auth_plugin_authplain extends DokuWiki_Auth_Plugin {
         global $config_cascade;
 
         // sanity checks, user must already exist and there must be something to change
-        if(($userinfo = $this->getUserData($user)) === false) return false;
+        if(($userinfo = $this->getUserData($user)) === false) {
+            msg($this->getLang('usernotexists'), -1);
+            return false;
+        }
+
+        // don't modify protected users
+        if(!empty($userinfo['protected'])) {
+            msg(sprintf($this->getLang('protected'), hsc($user)), -1);
+            return false;
+        }
+
         if(!is_array($changes) || !count($changes)) return true;
 
         // update userinfo with new data, remembering to encrypt any password
@@ -157,17 +193,11 @@ class auth_plugin_authplain extends DokuWiki_Auth_Plugin {
             $userinfo[$field] = $value;
         }
 
-        $groups   = join(',', $userinfo['grps']);
-        $userline = join(':', array($newuser, $userinfo['pass'], $userinfo['name'], $userinfo['mail'], $groups))."\n";
+        $userline = $this->_createUserLine($newuser, $userinfo['pass'], $userinfo['name'], $userinfo['mail'], $userinfo['grps']);
 
-        if(!$this->deleteUsers(array($user))) {
-            msg('Unable to modify user data. Please inform the Wiki-Admin', -1);
-            return false;
-        }
-
-        if(!io_saveFile($config_cascade['plainauth.users']['default'], $userline, true)) {
-            msg('There was an error modifying your user data. You should register again.', -1);
-            // FIXME, user has been deleted but not recreated, should force a logout and redirect to login page
+        if(!io_replaceInFile($config_cascade['plainauth.users']['default'], '/^'.$user.':/', $userline, true)) {
+            msg('There was an error modifying your user data. You may need to register again.', -1);
+            // FIXME, io functions should be fail-safe so existing data isn't lost
             $ACT = 'register';
             return false;
         }
@@ -192,13 +222,21 @@ class auth_plugin_authplain extends DokuWiki_Auth_Plugin {
 
         $deleted = array();
         foreach($users as $user) {
+            // don't delete protected users
+            if(!empty($this->users[$user]['protected'])) {
+                msg(sprintf($this->getLang('protected'), hsc($user)), -1);
+                continue;
+            }
             if(isset($this->users[$user])) $deleted[] = preg_quote($user, '/');
         }
 
         if(empty($deleted)) return 0;
 
         $pattern = '/^('.join('|', $deleted).'):/';
-        io_deleteFromFile($config_cascade['plainauth.users']['default'], $pattern, true);
+        if (!io_deleteFromFile($config_cascade['plainauth.users']['default'], $pattern, true)) {
+            msg($this->getLang('writefail'), -1);
+            return 0;
+        }
 
         // reload the user list and count the difference
         $count = count($this->users);
@@ -298,24 +336,75 @@ class auth_plugin_authplain extends DokuWiki_Auth_Plugin {
     protected function _loadUserData() {
         global $config_cascade;
 
-        $this->users = array();
+        $this->users = $this->_readUserFile($config_cascade['plainauth.users']['default']);
 
-        if(!@file_exists($config_cascade['plainauth.users']['default'])) return;
+        // support protected users
+        if(!empty($config_cascade['plainauth.users']['protected'])) {
+            $protected = $this->_readUserFile($config_cascade['plainauth.users']['protected']);
+            foreach(array_keys($protected) as $key) {
+                $protected[$key]['protected'] = true;
+            }
+            $this->users = array_merge($this->users, $protected);
+        }
+    }
 
-        $lines = file($config_cascade['plainauth.users']['default']);
+    /**
+     * Read user data from given file
+     *
+     * ignores non existing files
+     *
+     * @param string $file the file to load data from
+     * @return array
+     */
+    protected function _readUserFile($file) {
+        $users = array();
+        if(!file_exists($file)) return $users;
+
+        $lines = file($file);
         foreach($lines as $line) {
             $line = preg_replace('/#.*$/', '', $line); //ignore comments
             $line = trim($line);
             if(empty($line)) continue;
 
-            $row    = explode(":", $line, 5);
+            $row = $this->_splitUserData($line);
+            $row = str_replace('\\:', ':', $row);
+            $row = str_replace('\\\\', '\\', $row);
+
             $groups = array_values(array_filter(explode(",", $row[4])));
 
-            $this->users[$row[0]]['pass'] = $row[1];
-            $this->users[$row[0]]['name'] = urldecode($row[2]);
-            $this->users[$row[0]]['mail'] = $row[3];
-            $this->users[$row[0]]['grps'] = $groups;
+            $users[$row[0]]['pass'] = $row[1];
+            $users[$row[0]]['name'] = urldecode($row[2]);
+            $users[$row[0]]['mail'] = $row[3];
+            $users[$row[0]]['grps'] = $groups;
         }
+        return $users;
+    }
+
+    protected function _splitUserData($line){
+        // due to a bug in PCRE 6.6, preg_split will fail with the regex we use here
+        // refer github issues 877 & 885
+        if ($this->_pregsplit_safe){
+            return preg_split('/(?<![^\\\\]\\\\)\:/', $line, 5);       // allow for : escaped as \:
+        }
+
+        $row = array();
+        $piece = '';
+        $len = strlen($line);
+        for($i=0; $i<$len; $i++){
+            if ($line[$i]=='\\'){
+                $piece .= $line[$i];
+                $i++;
+                if ($i>=$len) break;
+            } else if ($line[$i]==':'){
+                $row[] = $piece;
+                $piece = '';
+                continue;
+            }
+            $piece .= $line[$i];
+        }
+        $row[] = $piece;
+
+        return $row;
     }
 
     /**

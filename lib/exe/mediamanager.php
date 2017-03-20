@@ -8,6 +8,8 @@
     require_once(DOKU_INC.'inc/init.php');
 
     global $INPUT;
+    global $lang;
+    global $conf;
     // handle passed message
     if($INPUT->str('msg1')) msg(hsc($INPUT->str('msg1')),1);
     if($INPUT->str('err')) msg(hsc($INPUT->str('err')),-1);
@@ -31,7 +33,8 @@
 
     global $INFO, $JSINFO;
     $INFO = !empty($INFO) ? array_merge($INFO, mediainfo()) : mediainfo();
-    $JSINFO = array('id' => '', 'namespace' => '');
+    $JSINFO['id']        = '';
+    $JSINFO['namespace'] = '';
     $AUTH = $INFO['perm'];    // shortcut for historical reasons
 
     $tmp = array();
@@ -57,7 +60,7 @@
     }
 
     // give info on PHP caught upload errors
-    if($_FILES['upload']['error']){
+    if(!empty($_FILES['upload']['error'])){
         switch($_FILES['upload']['error']){
             case 1:
             case 2:
@@ -71,7 +74,7 @@
     }
 
     // handle upload
-    if($_FILES['upload']['tmp_name']){
+    if(!empty($_FILES['upload']['tmp_name'])){
         $JUMPTO = media_upload($NS,$AUTH);
         if($JUMPTO) $NS = getNS($JUMPTO);
     }

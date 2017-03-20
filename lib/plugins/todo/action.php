@@ -174,24 +174,16 @@ class action_plugin_todo extends DokuWiki_Action_Plugin {
      * @return string new to-do completed or uncompleted tag e.g. <todo @user #>
      */
     private function _buildTodoTag($todoTag, $checked) {
-        $x = preg_match('%<todo([^>]*)>%i', $todoTag, $matches);
-        $newTag = '<todo';
-        if($x) {
-            if(($userPos = strpos($matches[1], '@')) !== false) {
-                $submatch = substr($todoTag, $userPos);
-				// @date 20140317 le: add support for email addresses
-                $x = preg_match('%@([-.\w@]+)%i', $submatch, $matchinguser);
-                if($x) {
-                    $newTag .= ' @' . $matchinguser[1];
-                }
-            }
-        }
+        $user = '';
         if($checked == 1) {
-            $newTag .= ' #';
+            if(!empty($_SERVER['REMOTE_USER'])) { $user = $_SERVER['REMOTE_USER']; }
+            $newTag = preg_replace('/>/', ' #'.$user.':'.date('Y-m-d').'>', $todoTag);
+        } else {
+            $newTag = preg_replace('/[\s]*[#].*>/', '>', $todoTag);
         }
-        $newTag .= '>';
         return $newTag;
     }
+
 
     /**
      * Find position of $occurance-th $needle in haystack

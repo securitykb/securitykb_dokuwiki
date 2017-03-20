@@ -2,15 +2,15 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Ondrej Vegh <ov@vsieti.sk>
  * @author Michal Mesko <michal.mesko@gmail.com>
  * @author exusik@gmail.com
  * @author Martin Michalek <michalek.dev@gmail.com>
  */
 $lang['admin_acl']             = 'Správa zoznamu prístupových práv';
-$lang['acl_group']             = 'Skupina';
-$lang['acl_user']              = 'Užívateľ';
+$lang['acl_group']             = 'Skupina:';
+$lang['acl_user']              = 'Užívateľ:';
 $lang['acl_perms']             = 'Práva pre';
 $lang['page']                  = 'Stránka';
 $lang['namespace']             = 'Menný priestor';

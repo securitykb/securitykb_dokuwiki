@@ -1,15 +1,17 @@
 <?php
+
 /**
- * romanian language file
- *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ *
  * @author Tiberiu Micu <tibimicu@gmx.net>
  * @author Sergiu Baltariu <s_baltariu@yahoo.com>
  * @author Emanuel-Emeric Andrași <n30@mandrivausers.ro>
  * @author Emanuel-Emeric Andrași <em.andrasi@mandrivausers.ro>
  * @author Marius OLAR <olarmariusalex@gmail.com>
  * @author Marius Olar <olarmariusalex@yahoo.com>
- * @author Emanuel-Emeric Andrași <em.andrasi@mandrivausers.ro>
+ * @author Marian Banica <banica.marian@gmail.com>
+ * @author Adrian Vesa <adrianvesa@dotwikis.com>
+ * @author valentina_prof <sadoveanu.inform@gmail.com>
  */
 $lang['encoding']              = 'utf-8';
 $lang['direction']             = 'ltr';
@@ -17,7 +19,7 @@ $lang['doublequoteopening']    = '„';
 $lang['doublequoteclosing']    = '“';
 $lang['singlequoteopening']    = '‚';
 $lang['singlequoteclosing']    = '‘';
-$lang['apostrophe']            = '\'';
+$lang['apostrophe']            = '’';
 $lang['btn_edit']              = 'Editează această pagină';
 $lang['btn_source']            = 'Arată sursa paginii';
 $lang['btn_show']              = 'Arată pagina';
@@ -28,7 +30,7 @@ $lang['btn_preview']           = 'Previzualizează';
 $lang['btn_top']               = 'La început';
 $lang['btn_newer']             = '<< mai recent';
 $lang['btn_older']             = 'mai vechi>>';
-$lang['btn_revs']              = 'Versiuni vechi';
+$lang['btn_revs']              = 'Versiuni anterioare';
 $lang['btn_recent']            = 'Modificări recente';
 $lang['btn_upload']            = 'Upload';
 $lang['btn_cancel']            = 'Renunțare';
@@ -41,7 +43,6 @@ $lang['btn_update']            = 'Actualizează';
 $lang['btn_delete']            = 'Șterge';
 $lang['btn_back']              = 'Înapoi';
 $lang['btn_backlink']          = 'Legătură anterioară';
-$lang['btn_backtomedia']       = 'Înapoi la selecția mediafile';
 $lang['btn_subscribe']         = 'Subscrie modificarea paginii';
 $lang['btn_profile']           = 'Actualizează profil';
 $lang['btn_reset']             = 'Resetează';
@@ -53,7 +54,10 @@ $lang['btn_revert']            = 'Revenire';
 $lang['btn_register']          = 'Înregistrează';
 $lang['btn_apply']             = 'Aplică';
 $lang['btn_media']             = 'Administrare media';
-$lang['loggedinas']            = 'Logat ca și';
+$lang['btn_deleteuser']        = 'Sterge-mi contul';
+$lang['btn_img_backto']        = 'Înapoi la %s';
+$lang['btn_mediaManager']      = 'Vizualizează în administratorul media';
+$lang['loggedinas']            = 'Autentificat ca:';
 $lang['user']                  = 'Utilizator';
 $lang['pass']                  = 'Parola';
 $lang['newpass']               = 'Parola nouă';
@@ -64,23 +68,31 @@ $lang['fullname']              = 'Nume complet';
 $lang['email']                 = 'E-mail';
 $lang['profile']               = 'Profil utilizator';
 $lang['badlogin']              = 'Ne pare rău, utilizatorul și/sau parola au fost greșite.';
+$lang['badpassconfirm']        = 'Ne pare rau, parola este gresita';
 $lang['minoredit']             = 'Modificare minoră';
 $lang['draftdate']             = 'Schiță salvată automat la';
 $lang['nosecedit']             = 'Pagina s-a modificat între timp, secțiunea info a expirat, s-a încărcat pagina întreagă în loc.';
+$lang['searchcreatepage']      = 'Dacă nu ai găsit ce ai căutat, poți crea o pagină nouă prin folosirea butonului \'\'Editează această pagină\'\'.';
 $lang['regmissing']            = 'Ne pare rău, trebuie să completezi toate cîmpurile.';
 $lang['reguexists']            = 'Ne pare rău, un utilizator cu acest nume este deja autentificat.';
 $lang['regsuccess']            = 'Utilizatorul a fost creat. Parola a fost trimisă prin e-mail.';
 $lang['regsuccess2']           = 'Utilizatorul a fost creat.';
+$lang['regfail']               = 'Utilizatorul nu a putu fi creat.';
 $lang['regmailfail']           = 'Se pare că a fost o eroare la trimiterea parolei prin e-mail. Contactează administratorul!';
-$lang['regbadmail']            = 'Adresa de e-mail este nevalidă - dacă sunteți de părere că este o eroare contactează administratorul.';
-$lang['regbadpass']            = 'Cele două parole furnizate nu sunt identice; încercați din nou.';
+$lang['regbadmail']            = 'Adresa de e-mail este nevalidă - dacă ești de părere că este o eroare contactează administratorul.';
+$lang['regbadpass']            = 'Cele două parole furnizate nu sunt identice; încearcă din nou.';
 $lang['regpwmail']             = 'Parola ta DokuWiki';
-$lang['reghere']               = 'Înca nu ai un cont? Fă-ți unul!';
+$lang['reghere']               = 'Încă nu ai un cont? Creează unul!';
 $lang['profna']                = 'Acest wiki nu permite modificarea profilului';
 $lang['profnochange']          = 'Nici o modificare; nimic de făcut.';
-$lang['profnoempty']           = 'Nu sunt admise numele sau adresa de e-mail necompletate.';
+$lang['profnoempty']           = 'Nu sunt permise numele sau adresa de e-mail necompletate.';
 $lang['profchanged']           = 'Profilul de utilizator a fost actualizat cu succes.';
-$lang['pwdforget']             = 'Parola uitată? Obține una nouă!';
+$lang['profnodelete']          = 'Acest wiki nu accepta stergerea conturilor utilizatorilor';
+$lang['profdeleteuser']        = 'Sterge cont';
+$lang['profdeleted']           = 'Contul tau a fost sters de pe acest wiki';
+$lang['profconfdelete']        = 'As dori sa sterf contul meu de pe acest Wiki. <br/> Aceasta actiune nu poate fi anulata.';
+$lang['proffail']              = 'Profilul utilizatorului nu a fost actualizat.';
+$lang['pwdforget']             = 'Parolă uitată? Obține una nouă!';
 $lang['resendna']              = 'Acest wiki nu permite retrimiterea parolei.';
 $lang['resendpwd']             = 'Configurează o parolă nouă pentru';
 $lang['resendpwdmissing']      = 'Ne pare rău, trebuie completate toate câmpurile.';
@@ -92,26 +104,27 @@ $lang['license']               = 'Exceptând locurile unde este altfel specifica
 $lang['licenseok']             = 'Notă: Prin editarea acestei pagini ești de acord să publici conțintul sub următoarea licență:';
 $lang['searchmedia']           = 'Caută numele fișierului:';
 $lang['searchmedia_in']        = 'Caută în %s';
-$lang['txt_upload']            = 'Selectează fișierul de încărcat';
-$lang['txt_filename']          = 'Încarcă fișierul ca (opțional)';
+$lang['txt_upload']            = 'Selectează fișierul de încărcat:';
+$lang['txt_filename']          = 'Încarcă fișierul ca (opțional):';
 $lang['txt_overwrt']           = 'Suprascrie fișierul existent';
-$lang['lockedby']              = 'Momentan blocat de';
-$lang['lockexpire']            = 'Blocarea expiră la';
+$lang['maxuploadsize']         = 'Incarcare maxima % per fisier.';
+$lang['lockedby']              = 'Momentan blocat de:';
+$lang['lockexpire']            = 'Blocarea expiră la:';
 $lang['js']['willexpire']      = 'Blocarea pentru editarea paginii expiră intr-un minut.\nPentru a preveni conflictele folosește butonul de previzualizare pentru resetarea blocării.';
 $lang['js']['notsavedyet']     = 'Există modificări nesalvate care se vor pierde.
 Dorești să continui?';
 $lang['js']['searchmedia']     = 'Caută fișiere';
 $lang['js']['keepopen']        = 'Menține fereastra deschisă la selecție';
 $lang['js']['hidedetails']     = 'Ascunde detalii';
-$lang['js']['mediatitle']      = 'Setări link';
-$lang['js']['mediadisplay']    = 'Tip link';
+$lang['js']['mediatitle']      = 'Configurare link';
+$lang['js']['mediadisplay']    = 'Tip de link';
 $lang['js']['mediaalign']      = 'Aliniere';
 $lang['js']['mediasize']       = 'Mărime imagine';
 $lang['js']['mediatarget']     = 'Țintă link';
 $lang['js']['mediaclose']      = 'Închide';
 $lang['js']['mediainsert']     = 'Inserează';
 $lang['js']['mediadisplayimg'] = 'Afișează imaginea';
-$lang['js']['mediadisplaylnk'] = 'Afișează doar linkul';
+$lang['js']['mediadisplaylnk'] = 'Afișează doar link-ul';
 $lang['js']['mediasmall']      = 'Versiune mică';
 $lang['js']['mediamedium']     = 'Versiune medie';
 $lang['js']['medialarge']      = 'Versiune mare';
@@ -133,7 +146,7 @@ $lang['js']['restore_confirm'] = 'Ești sigur de restaurarea acestei versiuni?';
 $lang['js']['media_diff']      = 'Arată diferențele:';
 $lang['js']['media_diff_both'] = 'Unul lângă altul';
 $lang['js']['media_diff_opacity'] = 'Străveziu';
-$lang['js']['media_diff_portions'] = 'Lovește cu putere';
+$lang['js']['media_diff_portions'] = 'Glisează';
 $lang['js']['media_select']    = 'Selectează fișierele...';
 $lang['js']['media_upload_btn'] = 'Încarcă';
 $lang['js']['media_done_btn']  = 'Gata';
@@ -143,7 +156,6 @@ $lang['js']['media_overwrt']   = 'Suprascrie fișierele deja existente';
 $lang['rssfailed']             = 'A apărut o eroare in timpul descărcării acestui câmp: ';
 $lang['nothingfound']          = 'Nu am găsit nimic.';
 $lang['mediaselect']           = 'Fișiere media';
-$lang['fileupload']            = 'Încarcare fișier media';
 $lang['uploadsucc']            = 'Încărcare reușită';
 $lang['uploadfail']            = 'Încărcare eșuată. Poate din cauza permisiunilor?';
 $lang['uploadwrong']           = 'Încărcare nepermisă. Extensia fișierului e nepermisă';
@@ -177,10 +189,13 @@ $lang['difflink']              = 'Link către această vizualizare comparativă'
 $lang['diff_type']             = 'Vezi diferențe:';
 $lang['diff_inline']           = 'Succesiv';
 $lang['diff_side']             = 'Alăturate';
+$lang['diffprevrev']           = 'Versiuni anterioare';
+$lang['diffnextrev']           = 'Urmatoarea versiune';
+$lang['difflastrev']           = 'Ultima versiune';
 $lang['line']                  = 'Linia';
-$lang['breadcrumb']            = 'Traseu';
-$lang['youarehere']            = 'Ești aici';
-$lang['lastmod']               = 'Ultima modificare';
+$lang['breadcrumb']            = 'Traseu:';
+$lang['youarehere']            = 'Ești aici:';
+$lang['lastmod']               = 'Ultima modificare:';
 $lang['by']                    = 'de către';
 $lang['deleted']               = 'șters';
 $lang['created']               = 'creat';
@@ -228,24 +243,21 @@ $lang['qb_sig']                = 'Inserează semnătură';
 $lang['qb_smileys']            = 'Smiley-uri';
 $lang['qb_chars']              = 'Caractere speciale';
 $lang['upperns']               = 'Accesează spațiul de nume părinte';
-$lang['admin_register']        = 'Adaugă utilizator nou';
 $lang['metaedit']              = 'Editează metadata';
 $lang['metasaveerr']           = 'Scrierea metadatelor a eșuat';
 $lang['metasaveok']            = 'Metadatele au fost salvate';
-$lang['img_backto']            = 'Înapoi la';
-$lang['img_title']             = 'Titlu';
-$lang['img_caption']           = 'Legendă';
-$lang['img_date']              = 'Dată';
-$lang['img_fname']             = 'Nume fișier';
-$lang['img_fsize']             = 'Dimensiune';
-$lang['img_artist']            = 'Fotograf';
-$lang['img_copyr']             = 'Drept de autor';
-$lang['img_format']            = 'Format';
-$lang['img_camera']            = 'Camera';
-$lang['img_keywords']          = 'Cuvinte cheie';
-$lang['img_width']             = 'Lățime';
-$lang['img_height']            = 'Înălțime';
-$lang['img_manager']           = 'Vizualizează în administratorul media';
+$lang['img_title']             = 'Titlu:';
+$lang['img_caption']           = 'Legendă:';
+$lang['img_date']              = 'Dată:';
+$lang['img_fname']             = 'Nume fișier:';
+$lang['img_fsize']             = 'Dimensiune:';
+$lang['img_artist']            = 'Fotograf:';
+$lang['img_copyr']             = 'Drept de autor:';
+$lang['img_format']            = 'Format:';
+$lang['img_camera']            = 'Camera:';
+$lang['img_keywords']          = 'Cuvinte cheie:';
+$lang['img_width']             = 'Lățime:';
+$lang['img_height']            = 'Înălțime:';
 $lang['subscr_subscribe_success'] = 'Adăugat %s la lista de abonare pentru %s';
 $lang['subscr_subscribe_error'] = 'Eroare la adăugarea %s la lista de abonare pentru %s';
 $lang['subscr_subscribe_noaddress'] = 'Nu există adresă de e-mail asociată autentificării curente, nu poți fi adăugat la lista de abonare';
@@ -263,7 +275,6 @@ $lang['subscr_style_every']    = 'e-mail la ficare schimbare';
 $lang['subscr_style_digest']   = 'e-mail cu sumar al modificărilor pentru fiecare pagină (la fiecare %.2f zile)';
 $lang['subscr_style_list']     = 'lista paginilor modificate de la ultimul e-mail (la fiecare %.2f zile)';
 $lang['authtempfail']          = 'Autentificarea utilizatorului este temporar indisponibilă. Contactează administratorul.';
-$lang['authpwdexpire']         = 'Parola va expira în %d zile, ar trebui să o schimbi în curând.';
 $lang['i_chooselang']          = 'Alege limba';
 $lang['i_installer']           = 'Installer DokuWiki';
 $lang['i_wikiname']            = 'Numele acestui wiki';
@@ -283,10 +294,14 @@ $lang['i_success']             = 'Configurarea a fost finalizată cu succes. Acu
 $lang['i_failure']             = 'Au apărut erori la scrierea fișierelor de configurare. Va trebui să le corectezi manual înainte de a putea folosi <a href="doku.php?id=wiki:welcome">noua ta instanță DokuWiki</a>.';
 $lang['i_policy']              = 'Politica ACL (liste de control a accesului) inițială';
 $lang['i_pol0']                = 'Wiki deschis (oricine poate citi, scrie și încărca fișiere)';
-$lang['i_pol1']                = 'Wiki public (oricine poate citi, utilizatorii înregistrați pot scrie și încărca fișiere';
+$lang['i_pol1']                = 'Wiki public (oricine poate citi, utilizatorii înregistrați pot scrie și încărca fișiere)';
 $lang['i_pol2']                = 'Wiki închis (doar utilizatorii înregistrați pot citi, scrie și încărca fișiere)';
+$lang['i_allowreg']            = 'Permite utilizatorilor sa se inregistreze singuri.';
 $lang['i_retry']               = 'Încearcă din nou';
 $lang['i_license']             = 'Te rugăm să alegi licența sub care dorești să publici conținutul:';
+$lang['i_license_none']        = 'Nu arata nici o informatie despre licenta.';
+$lang['i_pop_field']           = 'Te rog, ajuta-ne sa imbunatatim experienta DokuWiki.';
+$lang['i_pop_label']           = 'Odata pe luna, trimite date catre dezvoltatorii DokuWiki in mod anonim.';
 $lang['recent_global']         = 'În acest moment vizualizezi modificările în interiorul spațiului de nume <b>%s</b>. De asemenea poți <a href="%s">vizualiza modificările recente în întregului wiki-ul</a>.';
 $lang['years']                 = 'acum %d ani';
 $lang['months']                = 'acum %d luni';
@@ -319,3 +334,6 @@ $lang['media_perm_read']       = 'Ne pare rău, dar nu ai suficiente permisiuni 
 $lang['media_perm_upload']     = 'Ne pare rău, dar nu ai suficiente permisiuni pentru a putea încărca fișiere.';
 $lang['media_update']          = 'Încarcă noua versiune';
 $lang['media_restore']         = 'Restaurează această versiune';
+$lang['searchresult']          = 'Rezultatul cautarii';
+$lang['email_signature_text']  = 'Acest e-mail a fost generat de DokuWiki la
+@DOKUWIKIURL@';

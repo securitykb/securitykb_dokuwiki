@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Martin Michalek <michalek.dev@gmail.com>
  */
 $lang['server']                = 'LDAP server. Adresa (<code>localhost</code>) alebo úplné URL (<code>ldap://server.tld:389</code>)';
@@ -20,7 +20,7 @@ $lang['bindpw']                = 'Heslo vyššie uvedeného používateľa';
 $lang['userscope']             = 'Obmedzenie oblasti pri vyhľadávaní používateľa';
 $lang['groupscope']            = 'Obmedzenie oblasti pri vyhľadávaní skupiny';
 $lang['groupkey']              = 'Príslušnost k skupine určená z daného atribútu používateľa (namiesto štandardnej AD skupiny) napr. skupiny podľa oddelenia alebo telefónneho čísla';
-$lang['debug']                 = 'Zobraziť doplňujúce ladiace informácie pri chybe';
+$lang['debug']                 = 'Zobraziť dodatočné ladiace informácie pri chybe';
 $lang['deref_o_0']             = 'LDAP_DEREF_NEVER';
 $lang['deref_o_1']             = 'LDAP_DEREF_SEARCHING';
 $lang['deref_o_2']             = 'LDAP_DEREF_FINDING';

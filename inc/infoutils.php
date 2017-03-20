@@ -20,22 +20,28 @@ function checkUpdateMessages(){
     if(!$conf['updatecheck']) return;
     if($conf['useacl'] && !$INFO['ismanager']) return;
 
-    $cf = $conf['cachedir'].'/messages.txt';
+    $cf = getCacheName($updateVersion, '.updmsg');
     $lm = @filemtime($cf);
 
     // check if new messages needs to be fetched
     if($lm < time()-(60*60*24) || $lm < @filemtime(DOKU_INC.DOKU_SCRIPT)){
         @touch($cf);
-        dbglog("checkUpdateMessages(): downloading messages.txt");
+        dbglog("checkUpdateMessages(): downloading messages to ".$cf);
         $http = new DokuHTTPClient();
         $http->timeout = 12;
-        $data = $http->get(DOKU_MESSAGEURL.$updateVersion);
-        io_saveFile($cf,$data);
+        $resp = $http->get(DOKU_MESSAGEURL.$updateVersion);
+        if(is_string($resp) && ($resp == "" || substr(trim($resp), -1) == '%')) {
+            // basic sanity check that this is either an empty string response (ie "no messages")
+            // or it looks like one of our messages, not WiFi login or other interposed response
+            io_saveFile($cf,$resp);
+        } else {
+            dbglog("checkUpdateMessages(): unexpected HTTP response received");
+        }
     }else{
-        dbglog("checkUpdateMessages(): messages.txt up to date");
-        $data = io_readFile($cf);
+        dbglog("checkUpdateMessages(): messages up to date");
     }
 
+    $data = io_readFile($cf);
     // show messages through the usual message mechanism
     $msgs = explode("\n%\n",$data);
     foreach($msgs as $msg){
@@ -52,9 +58,9 @@ function checkUpdateMessages(){
 function getVersionData(){
     $version = array();
     //import version string
-    if(@file_exists(DOKU_INC.'VERSION')){
+    if(file_exists(DOKU_INC.'VERSION')){
         //official release
-        $version['date'] = trim(io_readfile(DOKU_INC.'VERSION'));
+        $version['date'] = trim(io_readFile(DOKU_INC.'VERSION'));
         $version['type'] = 'Release';
     }elseif(is_dir(DOKU_INC.'.git')){
         $version['type'] = 'Git';
@@ -102,15 +108,21 @@ function getVersion(){
 function check(){
     global $conf;
     global $INFO;
+    /* @var Input $INPUT */
+    global $INPUT;
 
     if ($INFO['isadmin'] || $INFO['ismanager']){
         msg('DokuWiki version: '.getVersion(),1);
-    }
 
-    if(version_compare(phpversion(),'5.2.0','<')){
-        msg('Your PHP version is too old ('.phpversion().' vs. 5.2.0+ needed)',-1);
-    }else{
-        msg('PHP version '.phpversion(),1);
+        if(version_compare(phpversion(),'5.3.3','<')){
+            msg('Your PHP version is too old ('.phpversion().' vs. 5.3.3+ needed)',-1);
+        }else{
+            msg('PHP version '.phpversion(),1);
+        }
+    } else {
+        if(version_compare(phpversion(),'5.3.3','<')){
+            msg('Your PHP version is too old',-1);
+        }
     }
 
     $mem = (int) php_to_byte(ini_get('memory_limit'));
@@ -129,20 +141,20 @@ function check(){
     if(is_writable($conf['changelog'])){
         msg('Changelog is writable',1);
     }else{
-        if (@file_exists($conf['changelog'])) {
+        if (file_exists($conf['changelog'])) {
             msg('Changelog is not writable',-1);
         }
     }
 
-    if (isset($conf['changelog_old']) && @file_exists($conf['changelog_old'])) {
+    if (isset($conf['changelog_old']) && file_exists($conf['changelog_old'])) {
         msg('Old changelog exists', 0);
     }
 
-    if (@file_exists($conf['changelog'].'_failed')) {
+    if (file_exists($conf['changelog'].'_failed')) {
         msg('Importing old changelog failed', -1);
-    } else if (@file_exists($conf['changelog'].'_importing')) {
+    } else if (file_exists($conf['changelog'].'_importing')) {
         msg('Importing old changelog now.', 0);
-    } else if (@file_exists($conf['changelog'].'_import_ok')) {
+    } else if (file_exists($conf['changelog'].'_import_ok')) {
         msg('Old changelog imported', 1);
         if (!plugin_isdisabled('importoldchangelog')) {
             msg('Importoldchangelog plugin not disabled after import', -1);
@@ -200,7 +212,7 @@ function check(){
     }
 
     if($INFO['userinfo']['name']){
-        msg('You are currently logged in as '.$_SERVER['REMOTE_USER'].' ('.$INFO['userinfo']['name'].')',0);
+        msg('You are currently logged in as '.$INPUT->server->str('REMOTE_USER').' ('.$INFO['userinfo']['name'].')',0);
         msg('You are part of the groups '.join($INFO['userinfo']['grps'],', '),0);
     }else{
         msg('You are currently not logged in',0);
@@ -237,18 +249,41 @@ function check(){
         }
     }
 
-    if ($index_corrupted)
-        msg('The search index is corrupted. It might produce wrong results and most
+    if($index_corrupted) {
+        msg(
+            'The search index is corrupted. It might produce wrong results and most
                 probably needs to be rebuilt. See
                 <a href="http://www.dokuwiki.org/faq:searchindex">faq:searchindex</a>
-                for ways to rebuild the search index.', -1);
-    elseif (!empty($lengths))
+                for ways to rebuild the search index.', -1
+        );
+    } elseif(!empty($lengths)) {
         msg('The search index seems to be working', 1);
-    else
-        msg('The search index is empty. See
+    } else {
+        msg(
+            'The search index is empty. See
                 <a href="http://www.dokuwiki.org/faq:searchindex">faq:searchindex</a>
                 for help on how to fix the search index. If the default indexer
-                isn\'t used or the wiki is actually empty this is normal.');
+                isn\'t used or the wiki is actually empty this is normal.'
+        );
+    }
+
+    // rough time check
+    $http = new DokuHTTPClient();
+    $http->max_redirect = 0;
+    $http->timeout = 3;
+    $http->sendRequest('http://www.dokuwiki.org', '', 'HEAD');
+    $now = time();
+    if(isset($http->resp_headers['date'])) {
+        $time = strtotime($http->resp_headers['date']);
+        $diff = $time - $now;
+
+        if(abs($diff) < 4) {
+            msg("Server time seems to be okay. Diff: {$diff}s", 1);
+        } else {
+            msg("Your server's clock seems to be out of sync! Consider configuring a sync with a NTP server.  Diff: {$diff}s");
+        }
+    }
+
 }
 
 /**
@@ -274,8 +309,18 @@ define('MSG_USERS_ONLY', 1);
 define('MSG_MANAGERS_ONLY',2);
 define('MSG_ADMINS_ONLY',4);
 
+/**
+ * Display a message to the user
+ *
+ * @param string $message
+ * @param int    $lvl   -1 = error, 0 = info, 1 = success, 2 = notify
+ * @param string $line  line number
+ * @param string $file  file number
+ * @param int    $allow who's allowed to see the message, see MSG_* constants
+ */
 function msg($message,$lvl=0,$line='',$file='',$allow=MSG_PUBLIC){
     global $MSG, $MSG_shown;
+    $errors = array();
     $errors[-1] = 'error';
     $errors[0]  = 'info';
     $errors[1]  = 'success';
@@ -303,6 +348,7 @@ function msg($message,$lvl=0,$line='',$file='',$allow=MSG_PUBLIC){
  *                         lvl   => int, level of the message (see msg() function)
  *                         allow => int, flag used to determine who is allowed to see the message
  *                                       see MSG_* constants
+ * @return bool
  */
 function info_msg_allowed($msg){
     global $INFO, $auth;
@@ -357,6 +403,9 @@ function dbg($msg,$hidden=false){
  */
 function dbglog($msg,$header=''){
     global $conf;
+    /* @var Input $INPUT */
+    global $INPUT;
+
     // The debug log isn't automatically cleaned thus only write it when
     // debugging has been enabled by the user.
     if($conf['allowdebug'] !== 1) return;
@@ -369,9 +418,35 @@ function dbglog($msg,$header=''){
     $file = $conf['cachedir'].'/debug.log';
     $fh = fopen($file,'a');
     if($fh){
-        fwrite($fh,date('H:i:s ').$_SERVER['REMOTE_ADDR'].': '.$msg."\n");
+        fwrite($fh,date('H:i:s ').$INPUT->server->str('REMOTE_ADDR').': '.$msg."\n");
         fclose($fh);
     }
+}
+
+/**
+ * Log accesses to deprecated fucntions to the debug log
+ *
+ * @param string $alternative The function or method that should be used instead
+ */
+function dbg_deprecated($alternative = '') {
+    global $conf;
+    if(!$conf['allowdebug']) return;
+
+    $backtrace = debug_backtrace();
+    array_shift($backtrace);
+    $self = array_shift($backtrace);
+    $call = array_shift($backtrace);
+
+    $called = trim($self['class'].'::'.$self['function'].'()', ':');
+    $caller = trim($call['class'].'::'.$call['function'].'()', ':');
+
+    $msg = $called.' is deprecated. It was called from ';
+    $msg .= $caller.' in '.$call['file'].':'.$call['line'];
+    if($alternative) {
+        $msg .= ' '.$alternative.' should be used instead!';
+    }
+
+    dbglog($msg);
 }
 
 /**
@@ -402,7 +477,7 @@ function dbg_backtrace(){
                 }elseif(is_array($arg)){
                     $params[] = '[Array]';
                 }elseif(is_null($arg)){
-                    $param[] = '[NULL]';
+                    $params[] = '[NULL]';
                 }else{
                     $params[] = (string) '"'.$arg.'"';
                 }

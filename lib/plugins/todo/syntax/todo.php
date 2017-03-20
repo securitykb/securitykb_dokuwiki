@@ -37,6 +37,21 @@
 /**
  * ChangeLog:
  *
+ * [06/14/2014]: by Markus Gschwendt <markus@runout.at>
+ *               add option usernames for <todo>
+ *               add start/due-date filter to todolist
+ *               bugfix: when the checkbox is clicked the arguments of the <todo> tag will be lost
+ *               some minor bugfixes
+ * [06/11/2014]: by Markus Gschwendt <markus@runout.at>
+ *               add option showdate to show/hide start/due-date
+ * [05/15/2014]: by Markus Gschwendt <markus@runout.at>
+ *               multiple users in <todo>, only the first user will be shown in rendered output
+ *               ! there is still a bug when the checkbox is clicked the arguments of the <todo> tag will be lost
+ * [05/14/2014]: by Markus Gschwendt <markus@runout.at>
+ *               add start-due date: set a start and/or due date and get colored output (css)
+ *               clean up some code, so we have less variables in function calls, use arrays instead
+ * [05/11/2014]: by Markus Gschwendt <markus@runout.at>
+ *               add options for list rendering: username:user|real|none checkbox:yes|no header:id|firstheader
  ** [04/13/2013]: by Leo Eibler <dokuwiki@sprossenwanne.at> / http://www.eibler.at
  **               bugfix: config option Strikethrough
  * [04/11/2013]: by Leo Eibler <dokuwiki@sprossenwanne.at> / http://www.eibler.at
@@ -126,6 +141,7 @@ class syntax_plugin_todo_todo extends DokuWiki_Syntax_Plugin {
      */
     public function connectTo($mode) {
         $this->Lexer->addEntryPattern('<todo[\s]*?.*?>(?=.*?</todo>)', $mode, 'plugin_todo_todo');
+        $this->Lexer->addSpecialPattern('~~NOTODO~~', $mode, 'plugin_todo_todo');
     }
 
     public function postConnect() {
@@ -141,13 +157,13 @@ class syntax_plugin_todo_todo extends DokuWiki_Syntax_Plugin {
      * @param &$handler Doku_Handler  Reference to the Doku_Handler object.
      * @return int The current lexer state for the match.
      */
-    public function handle($match, $state, $pos, Doku_Handler &$handler) {
+    public function handle($match, $state, $pos, Doku_Handler $handler) {
         switch($state) {
             case DOKU_LEXER_ENTER :
                 #Search to see if the '#' is in the todotag (if so, this means the Action has been completed)
                 $x = preg_match('%<todo([^>]*)>%i', $match, $tododata);
                 if($x) {
-                    list($handler->checked, $handler->todo_user) = $this->parseTodoArgs($tododata[1]);
+                    $handler->todoargs =  $this->parseTodoArgs($tododata[1]);
                 }
                 if(!is_numeric($handler->todo_index)) {
                     $handler->todo_index = 0;
@@ -169,8 +185,7 @@ class syntax_plugin_todo_todo extends DokuWiki_Syntax_Plugin {
                 #Make sure there is actually an action to create
                 if(trim($match) != '') {
 
-                    $data = array($state, $match, $handler->todo_index, $handler->todo_user, $handler->checked);
-
+                    $data = array_merge(array ($state, 'todotitle' => $match, 'todoindex' => $handler->todo_index, 'todouser' => $handler->todo_user, 'checked' => $handler->checked), $handler->todoargs);
                     $handler->todo_index++;
                     return $data;
                 }
@@ -180,6 +195,7 @@ class syntax_plugin_todo_todo extends DokuWiki_Syntax_Plugin {
                 #Delete temporary checked variable
                 unset($handler->todo_user);
                 unset($handler->checked);
+                unset($handler->todoargs);
                 //unset($handler->todo_index);
                 break;
             case DOKU_LEXER_SPECIAL :
@@ -196,15 +212,15 @@ class syntax_plugin_todo_todo extends DokuWiki_Syntax_Plugin {
      * @param  $data     Array         The data created by the <tt>handle()</tt> method.
      * @return Boolean true: if rendered successfully, or false: otherwise.
      */
-    public function render($mode, Doku_Renderer &$renderer, $data) {
+    public function render($mode, Doku_Renderer $renderer, $data) {
         global $ID;
-        list($state, $todotitle, $todoindex, $todouser, $checked) = $data;
+        list($state, $todotitle) = $data;
         if($mode == 'xhtml') {
             /** @var $renderer Doku_Renderer_xhtml */
             if($state == DOKU_LEXER_UNMATCHED) {
 
                 #Output our result
-                $renderer->doc .= $this->createTodoItem($renderer, $todotitle, $todoindex, $todouser, $checked, $ID);
+                $renderer->doc .= $this->createTodoItem($renderer, $ID, array_merge($data, array('checkbox'=>'yes')));
                 return true;
             }
 
@@ -225,63 +241,129 @@ class syntax_plugin_todo_todo extends DokuWiki_Syntax_Plugin {
      * @return array(bool, false|string) with checked and user
      */
     protected function parseTodoArgs($todoargs) {
-        $checked = $todouser = false;
-
-        if(strpos($todoargs, '#') !== false) {
-            $checked = true;
-        }
-        if(($userStartPos = strpos($todoargs, '@')) !== false) {
-            $userraw = substr($todoargs, $userStartPos);
-			// @date 20140317 le: add support for email addresses
-            $x = preg_match('%@([-.\w@]+)%i', $userraw, $usermatch);
-            if($x) {
-                $todouser = $usermatch[1];
+        $data['checked'] = false;
+        unset($data['start']);
+        unset($data['due']);
+        unset($data['completeddate']);
+	$data['showdate'] = $this->getConf("ShowdateTag");
+        $data['username'] = $this->getConf("Username");
+        $options = explode(' ', $todoargs);
+        foreach($options as $option) {
+            $option = trim($option);
+            if($option[0] == '@') {
+                $data['todousers'][] = substr($option, 1); //fill todousers array
+                if(!isset($data['todouser'])) $data['todouser'] = substr($option, 1); //set the first/main todouser
+            }
+            elseif($option[0] == '#') {
+                $data['checked'] = true;
+                @list($completeduser, $completeddate) = explode(':', $option, 2);
+                $data['completeduser'] = substr($completeduser, 1);
+                if(date('Y-m-d', strtotime($completeddate)) == $completeddate) {
+                    $data['completeddate'] = new DateTime($completeddate);
+                }
+	    }
+            else {
+                @list($key, $value) = explode(':', $option, 2);
+                switch($key) {
+                    case 'username':
+                        if(in_array($value, array('user', 'real', 'none'))) {
+                            $data['username'] = $value;
+                        }
+                        break;
+                    case 'start':
+                        if(date('Y-m-d', strtotime($value)) == $value) {
+                            $data['start'] = new DateTime($value);
+                        }
+                        break;
+                    case 'due':
+                        if(date('Y-m-d', strtotime($value)) == $value) {
+                            $data['due'] = new DateTime($value);
+                        }
+                        break;
+		    case 'showdate':
+                        if(in_array($value, array('yes', 'no'))) {
+                            $data['showdate'] = ($value == 'yes');
+                        }
+                        break;
+                }
             }
         }
-        return array($checked, $todouser);
+        return $data;
     }
 
     /**
      * @param Doku_Renderer_xhtml &$renderer
-     * @param string $todotitle Title of todoitem
-     * @param int    $todoindex which number the todoitem has, null is when not at the page
-     * @param string $todouser  User assigned to todoitem
-     * @param bool   $checked   whether item is done
      * @param string $id of page
+     * @param array  $data  data for rendering options
      * @return string html of an item
      */
-    protected function createTodoItem(&$renderer, $todotitle, $todoindex, $todouser, $checked, $id) {
+    protected function createTodoItem(&$renderer, $id, $data) {
         //set correct context
-        global $ID;
+        global $ID, $INFO;
         $oldID = $ID;
         $ID = $id;
+        $todotitle = $data['todotitle'];
+        $todoindex = $data['todoindex'];
+        $todouser = $data['todousers'][0];
+        $checked = $data['checked'];
 
-
-        $return = '<input type="checkbox" class="todocheckbox"'
+        if($data['checkbox']) {
+            $return = '<input type="checkbox" class="todocheckbox"'
             . ' data-index="' . $todoindex . '"'
             . ' data-date="' . hsc(@filemtime(wikiFN($ID))) . '"'
             . ' data-pageid="' . hsc($ID) . '"'
             . ' data-strikethrough="' . ($this->getConf("Strikethrough") ? '1' : '0') . '"'
             . ($checked ? 'checked="checked"' : '') . ' /> ';
-        if($todouser) {
+        }
+
+        // Username of first todouser in list
+        if($todouser && $data['username'] != 'none') {
+            switch ($data['username']) {
+                case "user": break;
+                case "real":
+                    if(!($todouser = userlink($todouser, true))) { //only if the user exists
+                        $todouser = $data['todousers'][0];
+                    }
+                    break;
+                case "none": unset($todouser); break;
+            }
             $return .= '<span class="todouser">[' . hsc($todouser) . ']</span>';
         }
 
+        // start/due date
+        unset($bg);
+        $now = new DateTime("now");
+        if(!$checked && (isset($data['start']) || isset($data['due'])) && (!isset($data['start']) || $data['start']<$now) && (!isset($data['due']) || $now<$data['due'])) $bg='todostarted';
+        if(!$checked && isset($data['due']) && $now>=$data['due']) $bg='tododue';
+
+        // show start/due date
+        if($data['showdate'] == 1 && (isset($data['start']) || isset($data['due']))) {
+            $return .= '<span class="tododates">[';
+            if(isset($data['start'])) { $return .= $data['start']->format('Y-m-d'); }
+            $return .= ' → ';
+            if(isset($data['due'])) { $return .= $data['due']->format('Y-m-d'); }
+            $return .= ']</span>';
+        }
+
         $spanclass = 'todotext';
-        if($this->getConf("CheckboxText") && !$this->getConf("AllowLinks")) {
+        if($this->getConf("CheckboxText") && !$this->getConf("AllowLinks") && $data['checkbox']) {
             $spanclass .= ' clickabletodo todohlght';
         }
+        if(isset($bg)) $spanclass .= ' '.$bg;
         $return .= '<span class="' . $spanclass . '">';
 
         if($checked && $this->getConf("Strikethrough")) {
             $return .= '<del>';
         }
-
         $return .= '<span class="todoinnertext">';
         if($this->getConf("AllowLinks")) {
             $return .= $this->_createLink($renderer, $todotitle, $todotitle);
         } else {
-            $return .= hsc($todotitle);
+            if ($oldID != $ID) {
+                $return .= $renderer->internallink($id, $todotitle, null, true);
+            } else {
+                 $return .= hsc($todotitle);
+            }
         }
         $return .= '</span>';
 
@@ -390,7 +472,7 @@ class syntax_plugin_todo_todo extends DokuWiki_Syntax_Plugin {
                             $renderer->doc .= '<tr class="sp_result"><td class="sp_page" colspan="2">';
 
                             // in case of integration with searchpattern there is no chance to find the index of an element
-                            $renderer->doc .= $this->createTodoItem($renderer, $todotitle, $todoindex, $todouser, $checked, $page);
+                            $renderer->doc .= $this->createTodoItem($renderer, $todotitle, $todoindex, $todouser, $checked, $page, array('checkbox'=>'yes', 'username'=>'user'));
 
                             $renderer->doc .= '</td></tr>';
                         }

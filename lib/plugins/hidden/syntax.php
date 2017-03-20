@@ -35,18 +35,39 @@ class syntax_plugin_hidden extends DokuWiki_Syntax_Plugin {
     }
 
   function connectTo($mode) {
-    $this->Lexer->addEntryPattern('<hidden.*?>(?=.*?</hidden>)', $mode,'plugin_hidden');
+    $this->Lexer->addEntryPattern('<hidden\b.*?>(?=.*?</hidden>)', $mode,'plugin_hidden');
+    $this->Lexer->addSpecialPattern('<hiddenSwitch[^>]*>', $mode,'plugin_hidden');
      }
   function postConnect() {
     $this->Lexer->addExitPattern('</hidden>','plugin_hidden');
   }
 
-  function handle($match, $state, $pos, &$handler) {
+  function handle($match, $state, $pos, Doku_Handler $handler) {
     switch ($state) {
+      case DOKU_LEXER_SPECIAL:
+        //hiddenSwitch
+        $return = array('text' => $this->getLang('switch.default'), 'type' => 'switch');
+        $match = trim(utf8_substr($match, 14, -1)); //14 = strlen("<hiddenSwitch ")
+        if ( $match !== '' ){
+          $return['text'] = $match;
+        }
+        $return['text'] = htmlspecialchars($return['text']);
+        return $return;
+
       case DOKU_LEXER_ENTER :
-          $return = array('active' => 'true', 'element'=>Array(), 'onHidden'=>'', 'onVisible'=>'',
-              'initialState'=>'hidden', 'state'=>$state, 'printHead' => true, 'bytepos_start' => $pos,
-              'edit' => false, 'editText' => $this->getLang('edit'), 'onExportPdf' => '');
+          $return = array(
+                'active' => 'true',
+                'element'=>Array(),
+                'onHidden'=>'',
+                'onVisible'=>'',
+                'initialState'=>'hidden',
+                'state'=>$state,
+                'printHead' => true,
+                'bytepos_start' => $pos,
+                'edit' => false,
+                'editText' => $this->getLang('edit'),
+                'onExportPdf' => ''
+              );
            $match = substr($match, 7, -1); //7 = strlen("<hidden")
 
         //Looking for the initial state
@@ -106,12 +127,12 @@ class syntax_plugin_hidden extends DokuWiki_Syntax_Plugin {
                $return['onHidden'] = $text;
                $return['onVisible'] = $text;
              } else { //if there's nothing left, take the default texts
-               $return['onHidden'] = $this->getlang('onHidden');
-               $return['onVisible'] = $this->getlang('onVisible');
+               $return['onHidden'] = $this->getConf('default_text_when_hidden');
+               $return['onVisible'] = $this->getConf('default_text_when_displayed');
              }
         } else { //if one string is specified but not the other, take the defaul text
-          $return['onHidden'] = ($return['onHidden']!='') ? $return['onHidden'] : $this->getlang('onHidden');
-          $return['onVisible'] = ($return['onVisible']!='') ? $return['onVisible'] : $this->getlang('onVisible');
+          $return['onHidden'] = ($return['onHidden']!='') ? $return['onHidden'] : $this->getConf('default_text_when_hidden');
+          $return['onVisible'] = ($return['onVisible']!='') ? $return['onVisible'] : $this->getConf('default_text_when_displayed');
         }
 
         //If we don't have an exportPdf text, take the onVisible one, since the block will be exported unfolded
@@ -142,11 +163,15 @@ class syntax_plugin_hidden extends DokuWiki_Syntax_Plugin {
     }
   }
 
-  function render($mode, &$renderer, $data) {
+  function render($mode, Doku_Renderer $renderer, $data) {
     if ( $this->_exportingPDF() ){
       $data['onVisible'] = $data['onExportPdf'];
     }
 
+    if($mode == 'xhtml' && $data['type'] == 'switch') {
+      $renderer->doc .= '<button class="button hiddenSwitch">'.$data['text'].'</button>';
+      return true;
+    }
     if($mode == 'xhtml'){
       switch ($data['state']) {
         case DOKU_LEXER_ENTER :
@@ -157,9 +182,11 @@ class syntax_plugin_hidden extends DokuWiki_Syntax_Plugin {
            $onHidden = p_render('xhtml', p_get_instructions($data['onHidden']), $tab);
 
           // "\n" are inside tags to avoid whitespaces in the DOM with FF
-          $renderer->doc .= '<div class="hiddenGlobal '.$classEdit.'">';
-          $renderer->doc .= '<div class="hiddenOnHidden">'.$onHidden."</div>"; //text displayed when hidden
-          $renderer->doc .= '<div class="hiddenOnVisible">'.$onVisible."</div>"; //text displayed when expanded
+          $renderer->doc .= '<div class="hiddenGlobal '.$classEdit;
+          $renderer->doc .= $data['active'] ? ' hiddenActive' : '';
+          $renderer->doc .= '">';
+
+
 
           $renderer->doc .= '<div class="hiddenElements">';
           foreach($data['element'] as $element){
@@ -169,11 +196,11 @@ class syntax_plugin_hidden extends DokuWiki_Syntax_Plugin {
 
           $renderer->doc .= '<div class="hiddenHead ';
           $renderer->doc .= $data['printHead'] ? '' : 'hiddenNoPrint';
-          $renderer->doc .= $data['active'] ? ' hiddenActive' : '';
           $renderer->doc .= ($data['initialState'] == 'hidden') ? ' hiddenSinceBeginning' : '';
           $renderer->doc .= '">';
-          $renderer->doc .= $onVisible;
-          $renderer->doc .= "</div>";
+          $renderer->doc .=   '<div class="hiddenOnHidden">'.$onHidden."</div>"; //text displayed when hidden
+          $renderer->doc .=   '<div class="hiddenOnVisible">'.$onVisible."</div>"; //text displayed when expanded
+          $renderer->doc .= '</div> <!-- .hiddenHead -->';
 
           $renderer->doc .= '<div class="hiddenBody">';
           break;
@@ -201,13 +228,20 @@ class syntax_plugin_hidden extends DokuWiki_Syntax_Plugin {
       }
       return true;
     }
+    
+    if ($mode == 'odt') {
+      if ($data['state'] == DOKU_LEXER_UNMATCHED && $data['type'] != 'switch') {
+        $renderer->doc .= $renderer->_xmlEntities($data['text']);
+      }
+      return true;
+    }
 
     return false;
   } // render()
 
   private function _exportingPDF(){
     global $ACT;
-    return ($ACT == 'export_pdf' || $ACT == 'export_pdfbook');
+    return ($ACT == 'export_pdf' || $ACT == 'export_pdfbook' || $ACT == 'export_odt');
   }
 
   var $editableBlocks = array();

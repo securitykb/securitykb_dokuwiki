@@ -25,9 +25,9 @@ class helper_plugin_pagelist extends DokuWiki_Plugin {
     var $showheader = false;   // show a heading line
     var $column     = array(); // which columns to show
     var $header     = array(); // language strings for table headers
-	var $sort       = false;   // alphabetical sort of pages by pagename
-	var $rsort      = false;   // reverse alphabetical sort of pages by pagename
-	
+    var $sort       = false;   // alphabetical sort of pages by pagename
+    var $rsort      = false;   // reverse alphabetical sort of pages by pagename
+
     var $plugins    = array(); // array of plugins to extend the pagelist
     var $discussion = NULL;    // discussion class object
     var $tag        = NULL;    // tag class object
@@ -59,6 +59,7 @@ class helper_plugin_pagelist extends DokuWiki_Plugin {
                 'linkbacks'=> $this->getConf('showlinkbacks'),
                 'tags'     => $this->getConf('showtags'),
                 'image'    => $this->getConf('showimage'),
+                'diff'     => $this->getConf('showdiff'),
                 );
 
         $this->plugins = array(
@@ -115,7 +116,7 @@ class helper_plugin_pagelist extends DokuWiki_Plugin {
     function setFlags($flags) {
         if (!is_array($flags)) return false;
 
-        $columns = array('date', 'user', 'desc', 'comments', 'linkbacks', 'tags','image');
+        $columns = array('date', 'user', 'desc', 'comments', 'linkbacks', 'tags', 'image', 'diff');
         foreach ($flags as $flag) {
             switch ($flag) {
                 case 'default':
@@ -143,14 +144,20 @@ class helper_plugin_pagelist extends DokuWiki_Plugin {
                     $this->showfirsthl = false;
                     break;
                 case 'sort':
-                	$this->sort = true;
-                	break;
+                    $this->sort = true;
+                    $this->rsort = false;
+                    break;
                 case 'rsort':
+                    $this->sort = false;
                     $this->rsort = true;
                     break;
                 case 'nosort':
-                	$this->sort = false;
-                	break;
+                    $this->sort = false;
+                    $this->rsort = false;
+                    break;
+                case 'showdiff':
+                    $flag = 'diff';
+                    break;
             }
 
             if (substr($flag, 0, 2) == 'no') {
@@ -207,7 +214,7 @@ class helper_plugin_pagelist extends DokuWiki_Plugin {
         // header row
         if ($this->showheader) {
             $this->doc .= DOKU_TAB.'<tr>'.DOKU_LF.DOKU_TAB.DOKU_TAB;
-            $columns = array('page', 'date', 'user', 'desc');
+            $columns = array('page', 'date', 'user', 'desc', 'diff');
             if ($this->column['image']) {	
                 if (!$this->header['image']) $this->header['image'] = hsc($this->pageimage->th());
                     $this->doc .= '<th class="images">'.$this->header['image'].'</th>';
@@ -219,7 +226,7 @@ class helper_plugin_pagelist extends DokuWiki_Plugin {
                 }
             }
             foreach ($this->plugins as $plug => $col) {
-                if ($this->column[$col] && $this->column[$col] != 'image') {
+                if ($this->column[$col] && $col != 'image') {
                     if (!$this->header[$col]) $this->header[$col] = hsc($this->$plug->th());
                     $this->doc .= '<th class="'.$col.'">'.$this->header[$col].'</th>';
                 }
@@ -256,8 +263,9 @@ class helper_plugin_pagelist extends DokuWiki_Plugin {
             if ($this->column['date']) $this->_dateCell();
             if ($this->column['user']) $this->_userCell();
             if ($this->column['desc']) $this->_descCell();
+            if ($this->column['diff']) $this->_diffCell($id);
             foreach ($this->plugins as $plug => $col) {
-                if ($this->column[$col] && $this->column[$col] != 'image') $this->_pluginCell($plug, $col, $id);
+                if ($this->column[$col] && $col != 'image') $this->_pluginCell($plug, $col, $id);
             }
             
             $this->doc .= DOKU_TAB.'</tr>'.DOKU_LF;
@@ -386,6 +394,25 @@ class helper_plugin_pagelist extends DokuWiki_Plugin {
         $max = $this->column['desc'];
         if (($max > 1) && (utf8_strlen($desc) > $max)) $desc = utf8_substr($desc, 0, $max).'…';
         return $this->_printCell('desc', hsc($desc));
+    }
+
+    /**
+     * Diff icon / link to diff page
+     */
+    function _diffCell($id) {
+        // check for page existence
+        if (!isset($this->page['exists'])) {
+            if (!isset($this->page['file'])) $this->page['file'] = wikiFN($id);
+            $this->page['exists'] = @file_exists($this->page['file']);
+        }
+
+        // produce output
+        $url_params = array();
+        $url_params ['do'] = 'diff';
+        $content = '<a href="'.wl($id, $url_params).($this->page['section'] ? '#'.$this->page['section'] : '').'" class="diff_link">
+<img src="/lib/images/diff.png" width="15" height="11" title="'.hsc($this->getLang('diff_title')).'" alt="'.hsc($this->getLang('diff_alt')).'"/>
+</a>';
+        return $this->_printCell('page', $content);
     }
 
     /**

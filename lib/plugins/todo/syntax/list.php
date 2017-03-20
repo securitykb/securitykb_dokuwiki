@@ -52,21 +52,53 @@ class syntax_plugin_todo_list extends syntax_plugin_todo_todo {
      * @param Doku_Handler $handler The handler
      * @return array Data for the renderer
      */
-    public function handle($match, $state, $pos, Doku_Handler &$handler) {
+    public function handle($match, $state, $pos, Doku_Handler $handler) {
 
         $options = substr($match, 10, -2); // strip markup
         $options = explode(' ', $options);
         $data = array(
+            'header' => $this->getConf("Header"),
             'completed' => 'all',
-            'assigned' => 'all'
+            'assigned' => 'all',
+            'completeduserlist' => 'all',
+            'ns' => 'all',
+            'showdate' => $this->getConf("ShowdateList"),
+            'checkbox' => $this->getConf("Checkbox"),
+            'username' => $this->getConf("Username"),
+            'short' => false,
         );
         $allowedvalues = array('yes', 'no');
         foreach($options as $option) {
             @list($key, $value) = explode(':', $option, 2);
             switch($key) {
+            	case 'header': // how should the header be rendered?
+                    if(in_array($value, array('id', 'firstheader', 'none'))) {
+                        $data['header'] = $value;
+                    }
+                    break;
+                case 'short':
+                    if(in_array($value, $allowedvalues)) {
+                        $data['short'] = ($value == 'yes');
+                    }
+                    break;
+                case 'showdate':
+                    if(in_array($value, $allowedvalues)) {
+                        $data['showdate'] = ($value == 'yes');
+                    }
+                    break;
+                case 'checkbox': // should checkbox be rendered?
+                    if(in_array($value, $allowedvalues)) {
+                        $data['checkbox'] = ($value == 'yes');
+                    }
+                    break;
                 case 'completed':
                     if(in_array($value, $allowedvalues)) {
                         $data['completed'] = ($value == 'yes');
+                    }
+                    break;
+                case 'username': // how should the username be rendered?
+                    if(in_array($value, array('user', 'real', 'none'))) {
+                        $data['username'] = $value;
                     }
                     break;
                 case 'assigned':
@@ -80,18 +112,47 @@ class syntax_plugin_todo_list extends syntax_plugin_todo_todo {
 					if( in_array( '@@USER@@', $data['assigned'] ) ) {
 						$data['assigned'][] = '@@MAIL@@';
 					}
-                    $data['assigned'] = array_map(
-                        function ($user) {
-                            //placeholder (inspired by replacement-patterns - see https://www.dokuwiki.org/namespace_templates#replacement_patterns)
-                            if( $user == '@@USER@@' || $user == '@@MAIL@@' ) {
-                                return $user;
-                            }
-                            //user
-                            return ltrim($user, '@');
-                        }, $data['assigned']
-                    );
+                    $data['assigned'] = array_map( array($this,"__todolistTrimUser"), $data['assigned'] );
                     break;
-            }
+                case 'completeduser':
+                    $data['completeduserlist'] = explode(',', $value);
+                                        // @date 20140317 le: if check for logged in user, also check for logged in user email address
+                                        if(in_array('@@USER@@', $data['completeduserlist'])) {
+                                                $data['completeduserlist'][] = '@@MAIL@@';
+                                        }
+                    $data['completeduserlist'] = array_map( array($this,"__todolistTrimUser"), $data['completeduserlist'] );
+                    break;
+                case 'ns':
+                    $data['ns'] = $value;
+                    break;
+                case 'startbefore':
+                    list($data['startbefore'], $data['startignore']) = $this->analyseDate($value);
+                    break;
+                case 'startafter':
+                    list($data['startafter'], $data['startignore']) = $this->analyseDate($value);
+                    break;
+                case 'startat':
+                    list($data['startat'], $data['startignore']) = $this->analyseDate($value);
+                    break;
+                 case 'duebefore':
+                    list($data['duebefore'], $data['dueignore']) = $this->analyseDate($value);
+                    break;
+                 case 'dueafter':
+                    list($data['dueafter'], $data['dueignore']) = $this->analyseDate($value);
+                    break;
+                 case 'dueat':
+                    list($data['dueat'], $data['dueignore']) = $this->analyseDate($value);
+                    break;
+                 case 'completedbefore':
+                    list($data['completedbefore']) = $this->analyseDate($value);
+                    break;
+                 case 'completedafter':
+                    list($data['completedafter']) = $this->analyseDate($value);
+                    break;
+                 case 'completedat':
+                    list($data['completedat']) = $this->analyseDate($value);
+                    break;
+             }
         }
         return $data;
     }
@@ -104,13 +165,14 @@ class syntax_plugin_todo_list extends syntax_plugin_todo_todo {
      * @param array $data The data from the handler() function
      * @return bool If rendering was successful.
      */
-    public function render($mode, Doku_Renderer &$renderer, $data) {
+    public function render($mode, Doku_Renderer $renderer, $data) {
         global $conf;
 
         if($mode != 'xhtml') return false;
         /** @var Doku_Renderer_xhtml $renderer */
 
         $opts['pattern'] = '/<todo([^>]*)>(.*)<\/todo[\W]*?>/'; //all todos in a wiki page
+        $opts['ns'] = $data['ns'];
         //TODO check if storing subpatterns doesn't cost too much resources
 
         // search(&$data, $base,            $func,                       $opts,$dir='',$lvl=1,$sort='natural')
@@ -118,7 +180,11 @@ class syntax_plugin_todo_list extends syntax_plugin_todo_todo {
 
         $todopages = $this->filterpages($todopages, $data);
 
-        $this->htmlTodoTable($renderer, $todopages);
+        if($data['short']) {
+            $this->htmlShort($renderer, $todopages, $data);
+        } else {
+            $this->htmlTodoTable($renderer, $todopages, $data);
+        }
 
         return true;
     }
@@ -157,7 +223,13 @@ class syntax_plugin_todo_list extends syntax_plugin_todo_todo {
         //check ACL
         if(auth_quickaclcheck($item['id']) < AUTH_READ) return false;
 
+        // filter namespaces
+        if(!$this->filter_ns($item['id'], $opts['ns'])) return false;
+
         $wikitext = rawWiki($item['id']); //get wiki text
+
+        // check if ~~NOTODO~~ is set on the page to skip this page
+        if(1 == preg_match('/~~NOTODO~~/', $wikitext)) return false;
 
         $item['count'] = preg_match_all($opts['pattern'], $wikitext, $matches); //count how many times appears the pattern
         if(!empty($item['count'])) { //if it appears at least once
@@ -165,6 +237,77 @@ class syntax_plugin_todo_list extends syntax_plugin_todo_todo {
             $data[] = $item;
         }
         return true;
+    }
+
+    /**
+     * filter namespaces
+     *
+     * @param $todopages array pages with all todoitems
+     * @param $item     string listing parameters
+     * @return boolean if item id is in namespace
+     */
+    private function filter_ns($item, $ns) {
+        global $ID;
+        // check if we should accept currant namespace+subnamespaces or only subnamespaces
+        $wildsubns = substr($ns, -2) == '.:';
+        $onlysubns = !$wildsubns && (substr($ns, -1) == ':' || substr($ns, -2) == ':.');
+//        $onlyns =  $onlysubns && substr($ns, -1) == '.';
+
+        // if first char of ns is '.'replace it with current ns
+        if ($ns[0] == '.') {
+            $ns = substr($ID, 0, strrpos($ID, ':')+1).ltrim($ns, '.:');
+        }
+        $ns = trim($ns, '.:');
+        $len = strlen($ns);
+        $parsepage = false;
+
+        if ($parsepage = $ns == 'all') {
+            // Always return the todo pages
+        } elseif ($ns == '/') {
+            // Only return the todo page if it's in the root namespace 
+            $parsepage = strpos($item, ':') === FALSE;
+        } elseif ($wildsubns) {
+            $p = strpos($item.':', ':', $len+1);
+            $x = substr($item, $len+1, $p-$len);
+            $parsepage = 0 === strpos($item, rtrim($ns.':'.$x, ':').':');
+        } elseif ($onlysubns) {
+            $parsepage = 0 === strpos($item, $ns.':');
+        } elseif ($parsepage = substr($item, 0, $len) == $ns) {
+        }
+        return $parsepage;
+    }
+
+    /**
+     * Expand assignee-placeholders 
+     * 
+     * @param $user	String to be worked on
+     * @return	expanded string
+     */
+    private function __todolistExpandAssignees($user) {
+        global $USERINFO;
+        if($user == '@@USER@@' && !empty($_SERVER['REMOTE_USER'])) {  //$INPUT->server->str('REMOTE_USER')
+            return $_SERVER['REMOTE_USER'];
+        }
+        // @date 20140317 le: check for logged in user email address
+        if( $user == '@@MAIL@@' && isset( $USERINFO['mail'] ) ) {  
+            return $USERINFO['mail'];
+        }
+        return  $user;
+    }
+
+    /**
+     * Trim input if it's a user
+     * 
+     * @param $user	String to be worked on
+     * @return	trimmed string
+     */
+    private function __todolistTrimUser($user) {
+        //placeholder (inspired by replacement-patterns - see https://www.dokuwiki.org/namespace_templates#replacement_patterns)
+        if( $user == '@@USER@@' || $user == '@@MAIL@@' ) {
+            return $user;
+        }
+        //user
+        return trim(ltrim($user, '@'));
     }
 
     /**
@@ -176,22 +319,40 @@ class syntax_plugin_todo_list extends syntax_plugin_todo_todo {
      */
     private function filterpages($todopages, $data) {
         $pages = array();
-        foreach($todopages as $page) {
-            $todos = array();
-            // contains 3 arrays: an array with complete matches and 2 arrays with subpatterns
-            foreach($page['matches'][1] as $todoindex => $todomatch) {
-                list($checked, $todouser) = $this->parseTodoArgs($todomatch);
-                $todotitle = trim($page['matches'][2][$todoindex]);
+        if(count($todopages)>0) {
+            foreach($todopages as $page) {
+                $todos = array();
+                // contains 3 arrays: an array with complete matches and 2 arrays with subpatterns
+                foreach($page['matches'][1] as $todoindex => $todomatch) {
+                    $todo = array_merge(array('todotitle' => trim($page['matches'][2][$todoindex]),  'todoindex' => $todoindex), $this->parseTodoArgs($todomatch), $data);
 
-                if($this->isRequestedTodo($data, $checked, $todouser)) {
-                    $todos[] = array($todotitle, $todoindex, $todouser, $checked);
+                    if($this->isRequestedTodo($todo)) { $todos[] = $todo; }
+                }
+                if(count($todos) > 0) {
+                    $pages[] = array('id' => $page['id'], 'todos' => $todos);
                 }
             }
-            if(count($todos) > 0) {
-                $pages[] = array('id' => $page['id'], 'todos' => $todos);
+            return $pages;
+        }
+    return null;
+    }
+
+
+    private function htmlShort($R, $todopages, $data) {
+        $done = 0; $todo = 0;
+//echo "<pre>";
+//print_r($todopages);
+//die;
+        foreach($todopages as $page) {
+            foreach($page['todos'] as $value) {
+                $todo++;
+                if ($value['checked']) {
+                    $done++;
+                }
             }
         }
-        return $pages;
+
+        $R->cdata("($done/$todo)");
     }
 
     /**
@@ -199,19 +360,23 @@ class syntax_plugin_todo_list extends syntax_plugin_todo_todo {
      *
      * @param Doku_Renderer_xhtml $R
      * @param array $todopages
+     * @param array $data array with rendering options
      */
-    private function htmlTodoTable($R, $todopages) {
+    private function htmlTodoTable($R, $todopages, $data) {
         $R->table_open();
         foreach($todopages as $page) {
-            $R->tablerow_open();
-            $R->tableheader_open();
-            $R->internallink($page['id'], $page['id']);
-            $R->tableheader_close();
-            $R->tablerow_close();
+       	    if ($data['header']!='none') {
+                $R->tablerow_open();
+                $R->tableheader_open();
+                $R->internallink($page['id'], ($data['header']=='firstheader' ? p_get_first_heading($page['id']) : $page['id']));
+                $R->tableheader_close();
+                $R->tablerow_close();
+       	    }
             foreach($page['todos'] as $todo) {
+//echo "<pre>";var_dump($todo);echo "</pre>";
                 $R->tablerow_open();
                 $R->tablecell_open();
-                $R->doc .= $this->createTodoItem($R, $todo[0], $todo[1], $todo[2], $todo[3], $page['id']);
+                $R->doc .= $this->createTodoItem($R, $page['id'], array_merge($todo, $data));
                 $R->tablecell_close();
                 $R->tablerow_close();
             }
@@ -227,35 +392,118 @@ class syntax_plugin_todo_list extends syntax_plugin_todo_todo {
      * @param $todouser string user username of user
      * @return bool if the todoitem should be listed
      */
-    private function isRequestedTodo($data, $checked, $todouser) {
-
+    /**
+     * Check the conditions for adding a todoitem
+     *
+     * @param $data     array the defined filters
+     * @param $checked  bool completion status of task; true: finished, false: open
+     * @param $todouser string user username of user
+     * @return bool if the todoitem should be listed
+     */
+    private function isRequestedTodo($data) {
         //completion status
         $condition1 = $data['completed'] === 'all' //all
-                      || $data['completed'] === $checked; //yes or no
+                      || $data['completed'] === $data['checked']; //yes or no
 
         // resolve placeholder in assignees
         $requestedassignees = array();
         if(is_array($data['assigned'])) {
-            $requestedassignees = array_map(
-                function($user) {
-					global $USERINFO;
-                    if($user == '@@USER@@' && !empty($_SERVER['REMOTE_USER'])) {  //$INPUT->server->str('REMOTE_USER')
-                            return $_SERVER['REMOTE_USER'];
-                    }
-					// @date 20140317 le: check for logged in user email address
-					if( $user == '@@MAIL@@' && isset( $USERINFO['mail'] ) ) {  
-							return $USERINFO['mail'];
-					}
-                    return $user;
-                },
-                $data['assigned']
-            );
+            $requestedassignees = array_map( array($this,"__todolistExpandAssignees"), $data['assigned'] );
         }
         //assigned
-        $condition2 =   $data['assigned'] === 'all' //all
-                        || (is_bool($data['assigned']) && $data['assigned'] == $todouser) //yes or no
-                        || (is_array($data['assigned']) && in_array($todouser, $requestedassignees)); //one of the requested users?
+        $condition2 = $condition2
+                        || $data['assigned'] === 'all' //all
+                        || (is_bool($data['assigned']) && $data['assigned'] == $data['todouser']); //yes or no
 
-        return $condition1 AND $condition2;
+        if (!$condition2 && is_array($data['assigned']) && is_array($data['todousers']))
+            foreach($data['todousers'] as $todouser) {
+                if(in_array($todouser, $requestedassignees)) { $condition2 = true; break; }
+            }
+
+        //completed by
+        if($condition2 && is_array($data['completeduserlist']))
+            $condition2 = in_array($data['completeduser'], $data['completeduserlist']);
+
+        //compare start/due dates
+        if($condition1 && $condition2) {
+            $condition3s = true; $condition3d = true;
+            if(isset($data['startbefore']) || isset($data['startafter']) || isset($data['startat'])) {
+                if(is_object($data['start'])) {
+                    if($data['startignore'] != '!') {
+                        if(isset($data['startbefore'])) { $condition3s = $condition3s && new DateTime($data['startbefore']) > $data['start']; }
+                        if(isset($data['startafter'])) { $condition3s = $condition3s && new DateTime($data['startafter']) < $data['start']; }
+                        if(isset($data['startat'])) { $condition3s = $condition3s && new DateTime($data['startat']) == $data['start']; }
+                    }
+                } else {
+                    if(!$data['startignore'] == '*') { $condition3s = false; }
+                    if($data['startignore'] == '!') { $condition3s = false; }
+                }
+            }
+
+            if(isset($data['duebefore']) || isset($data['dueafter']) || isset($data['dueat'])) {
+                if(is_object($data['due'])) {
+                    if($data['dueignore'] != '!') {
+                        if(isset($data['duebefore'])) { $condition3d = $condition3d && new DateTime($data['duebefore']) > $data['due']; }
+                        if(isset($data['dueafter'])) { $condition3d = $condition3d && new DateTime($data['dueafter']) < $data['due']; }
+                        if(isset($data['dueat'])) { $condition3d = $condition3d && new DateTime($data['dueat']) == $data['due']; }
+                    }
+                 } else {
+                    if(!$data['dueignore'] == '*') { $condition3d = false; }
+                    if($data['dueignore'] == '!') { $condition3d = false; }
+                }
+            }
+            $condition3 = $condition3s && $condition3d;
+        }
+
+	// compare completed date
+        $condition4 = true;
+        if(isset($data['completedbefore'])) {
+            $condition4 = $condition4 && new DateTime($data['completedbefore']) > $data['completeddate'];
+        }
+        if(isset($data['completedafter'])) {
+            $condition4 = $condition4 && new DateTime($data['completedafter']) < $data['completeddate'];
+        }
+        if(isset($data['completedat'])) {
+            $condition4 = $condition4 && new DateTime($data['completedat']) == $data['completeddate'];
+        }
+
+        return $condition1 AND $condition2 AND $condition3 AND $condition4;
     }
+
+
+    /**
+    * Analyse of relative/absolute Date and return an absolute date
+    *
+    * @param $date      string  absolute/relative value of the date to analyse
+    * @return           array   absolute date or actual date if $date is invalid
+    */
+    private function analyseDate($date) {
+        $result = array($date, '');
+        if(is_string($date)) {
+            if($date == '!') {
+               $result = array('', '!');
+            } elseif ($date =='*') {
+               $result = array('', '*');
+            } else {
+                if(substr($date, -1) == '*') {
+                    $date = substr($date, 0, -1);
+                    $result = array($date, '*');
+                }
+
+                if(date('Y-m-d', strtotime($date)) == $date) {
+                    $result[0] = $date;
+                } elseif(preg_match('/^[\+\-]\d+$/', $date)) { // check if we have a valid relative value
+                    $newdate = date_create(date('Y-m-d'));
+                    date_modify($newdate, $date . ' day');
+                    $result[0] = date_format($newdate, 'Y-m-d');
+                } else {
+                    $result[0] = date('Y-m-d');
+                }
+            }
+        } else { $result[0] = date('Y-m-d'); }
+
+        return $result;
+    }
+
+
 }

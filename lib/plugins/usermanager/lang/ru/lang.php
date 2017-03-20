@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Denis Simakov <akinoame1@gmail.com>
  * @author Andrew Pleshakov <beotiger@mail.ru>
  * @author Змей Этерийский evil_snake@eternion.ru
@@ -19,6 +19,11 @@
  * @author Johnny Utah <pcpa@cyberpunk.su>
  * @author Ivan I. Udovichenko (sendtome@mymailbox.pp.ua)
  * @author Pavel <ivanovtsk@mail.ru>
+ * @author Aleksandr Selivanov <alexgearbox@yandex.ru>
+ * @author Igor Degraf <igordegraf@gmail.com>
+ * @author Vitaly Filatenko <kot@hacktest.net>
+ * @author dimsharav <dimsharav@gmail.com>
+ * @author Radimir <radimir.shevchenko@gmail.com>
  */
 $lang['menu']                  = 'Управление пользователями';
 $lang['noauth']                = '(авторизация пользователей недоступна)';
@@ -42,8 +47,8 @@ $lang['search_prompt']         = 'Искать';
 $lang['clear']                 = 'Сброс фильтра поиска';
 $lang['filter']                = 'Фильтр';
 $lang['export_all']            = 'Экспорт всех пользователей (CSV)';
-$lang['export_filtered']       = 'Экспорт пользователей с фильтрацией списка (CSV)';
-$lang['import']                = 'Импорт новых пользователей';
+$lang['export_filtered']       = 'Экспорт отфильтрованного списка пользователей (CSV)';
+$lang['import']                = 'импортировать новых пользователей';
 $lang['line']                  = 'Строка №';
 $lang['error']                 = 'Ошибка';
 $lang['summary']               = 'Показаны пользователи %1$d–%2$d из %3$d найденных. Всего пользователей: %4$d.';
@@ -57,22 +62,33 @@ $lang['start']                 = 'в начало';
 $lang['prev']                  = 'назад';
 $lang['next']                  = 'вперёд';
 $lang['last']                  = 'в конец';
-$lang['edit_usermissing']      = 'Выбранный пользователь не найден. Возможно, указанный логин был удалён или изменён извне.';
-$lang['user_notify']           = 'Сообщить пользователю';
-$lang['note_notify']           = 'Письма с уведомлением высылаются только в случае получения нового пароля.';
-$lang['note_group']            = 'Если группа не указана, новые пользователи будут добавлены в группу по умолчанию (%s).';
-$lang['note_pass']             = 'Пароль будет сгенерирован автоматически, если поле оставлено пустым и включено уведомление пользователя.';
+$lang['edit_usermissing']      = 'Выбранный пользователь не найден. Возможно, указанный логин был удалён или изменён извне.';
+$lang['user_notify']           = 'Оповестить пользователя';
+$lang['note_notify']           = 'Письма с уведомлением высылаются только в случае получения нового пароля.';
+$lang['note_group']            = 'Если группа не указана, новые пользователи будут добавлены в группу по умолчанию (%s).';
+$lang['note_pass']             = 'Пароль будет сгенерирован автоматически, если поле оставлено пустым и включено уведомление пользователя.';
 $lang['add_ok']                = 'Пользователь успешно добавлен';
 $lang['add_fail']              = 'Не удалось добавить пользователя';
 $lang['notify_ok']             = 'Письмо с уведомлением отправлено';
 $lang['notify_fail']           = 'Не удалось отправить письмо с уведомлением';
+$lang['import_userlistcsv']    = 'Файл со списком пользователей (CSV):';
+$lang['import_header']         = 'Последний импорт — список ошибок';
 $lang['import_success_count']  = 'Импорт пользователей: %d пользователей найдено, %d импортировано успешно.';
-$lang['import_failure_count']  = 'Импорт пользователей: %d не удалось. Список ошибок прочтите ниже.';
-$lang['import_error_fields']   = 'Не все поля заполнены. Найдено %d, а нужно 4.';
+$lang['import_failure_count']  = 'Импорт пользователей: %d не удалось. Ошибки перечислены ниже.';
+$lang['import_error_fields']   = 'Не все поля заполнены. Найдено %d, а нужно: 4.';
 $lang['import_error_baduserid'] = 'Отсутствует идентификатор пользователя';
 $lang['import_error_badname']  = 'Имя не годится';
 $lang['import_error_badmail']  = 'Адрес электронной почты не годится';
-$lang['import_error_upload']   = 'Импорт не удался. CSV файл не загружен или пуст.';
+$lang['import_error_upload']   = 'Импорт не удался. CSV-файл не загружен или пуст.';
 $lang['import_error_readfail'] = 'Импорт не удался. Невозможно прочесть загруженный файл.';
 $lang['import_error_create']   = 'Невозможно создать пользователя';
 $lang['import_notify_fail']    = 'Оповещение не может быть отправлено импортированному пользователю %s по электронной почте %s.';
+$lang['import_downloadfailures'] = 'Скачать ошибки в формате CSV для исправления';
+$lang['addUser_error_missing_pass'] = 'Для возможности генерации пароля, пожалуйста, установите пароль или активируйте оповещения.';
+$lang['addUser_error_pass_not_identical'] = 'Введённые ппароли не совпадают.';
+$lang['addUser_error_modPass_disabled'] = 'Изменение пароля в настоящее время невозможно.';
+$lang['addUser_error_name_missing'] = 'Укажите имя нового пользователя.';
+$lang['addUser_error_modName_disabled'] = 'Изменение имени в настоящее время невозможно.';
+$lang['addUser_error_mail_missing'] = 'Укажите адрес эл. почты нового пользователя.';
+$lang['addUser_error_modMail_disabled'] = 'Изменение e-mail в настоящее время невозможно.';
+$lang['addUser_error_create_event_failed'] = 'Плагин заблокировал добавление нового пользователя. Смотрите также другие сообщения.';

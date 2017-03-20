@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author François Kooman <fkooman.tuxed.net>
  * @author Jack van Klaren <dokuwiki@afentoe.xs4all.nl>
  * @author Riny Heijdendael <riny@heijdendael.nl>
@@ -23,8 +23,8 @@
  * @author Remon <no@email.local>
  */
 $lang['admin_acl']             = 'Toegangsrechten';
-$lang['acl_group']             = 'Groep';
-$lang['acl_user']              = 'Gebruiker';
+$lang['acl_group']             = 'Groep:';
+$lang['acl_user']              = 'Gebruiker:';
 $lang['acl_perms']             = 'Permissies voor';
 $lang['page']                  = 'Pagina';
 $lang['namespace']             = 'Namespace';

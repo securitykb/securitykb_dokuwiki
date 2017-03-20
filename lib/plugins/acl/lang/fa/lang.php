@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author behrad eslamifar <behrad_es@yahoo.com)
  * @author Mohsen Firoozmandan <info@mambolearn.com>
  * @author omidmr@gmail.com
@@ -12,8 +12,8 @@
  * @author AmirH Hassaneini <mytechmix@gmail.com>
  */
 $lang['admin_acl']             = 'مدیریت کنترل دسترسی‌ها';
-$lang['acl_group']             = 'گروه';
-$lang['acl_user']              = 'کاربر';
+$lang['acl_group']             = 'گروه:';
+$lang['acl_user']              = 'کاربر:';
 $lang['acl_perms']             = 'مجوز برای';
 $lang['page']                  = 'صفحه';
 $lang['namespace']             = 'فضای‌نام';

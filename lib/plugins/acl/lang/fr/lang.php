@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Sébastien Bauer <sebastien.bauer@advalvas.be>
  * @author Antoine Fixary <antoine.fixary@freesbee.fr>
  * @author cumulus <pta-n56@myamail.com>
@@ -28,8 +28,8 @@
  * @author Bruno Veilleux <bruno.vey@gmail.com>
  */
 $lang['admin_acl']             = 'Gestion de la liste des contrôles d\'accès (ACL)';
-$lang['acl_group']             = 'Groupe';
-$lang['acl_user']              = 'Utilisateur';
+$lang['acl_group']             = 'Groupe:';
+$lang['acl_user']              = 'Utilisateur:';
 $lang['acl_perms']             = 'Autorisations pour';
 $lang['page']                  = 'Page';
 $lang['namespace']             = 'Catégorie';

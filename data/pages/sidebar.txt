@@ -11,4 +11,3 @@
 
 === KB ===
   * [[wiki:welcome|Getting Started]]
-  * Coming Soon

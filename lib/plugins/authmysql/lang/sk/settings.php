@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Martin Michalek <michalek.dev@gmail.com>
  */
 $lang['server']                = 'MySQL server';
@@ -10,7 +10,7 @@ $lang['user']                  = 'Meno používateľa MySQL';
 $lang['password']              = 'Heslo pre vyššie uvedeného používateľa';
 $lang['database']              = 'Použiť databázu';
 $lang['charset']               = 'Znaková sada databázy';
-$lang['debug']                 = 'Zobraziť doplňujúce ladiace informácie';
+$lang['debug']                 = 'Zobraziť dodatočné ladiace informácie';
 $lang['forwardClearPass']      = 'Posielať heslo ako nezakódovaný text nižšie uvedenému SQL príkazu namiesto použitia kódovania';
 $lang['TablesToLock']          = 'Zoznam tabuliek oddelených čiarkou, ktoré by mali byť uzamknuté pri operáciách zápisu';
 $lang['checkPass']             = 'SQL príkaz pre kontrolu hesla';

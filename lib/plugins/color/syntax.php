@@ -28,7 +28,7 @@ class syntax_plugin_color extends DokuWiki_Syntax_Plugin {
     /**
      * Handle the match
      */
-    function handle($match, $state, $pos, &$handler){
+    function handle($match, $state, $pos, Doku_Handler $handler){
         switch ($state) {
           case DOKU_LEXER_ENTER :
                 list($color, $background) = preg_split("/\//u", substr($match, 6, -1), 2);
@@ -45,7 +45,7 @@ class syntax_plugin_color extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    function render($mode, &$renderer, $data) {
+    function render($mode, Doku_Renderer $renderer, $data) {
         if($mode == 'xhtml'){
             list($state, $match) = $data;
             switch ($state) {
@@ -56,6 +56,28 @@ class syntax_plugin_color extends DokuWiki_Syntax_Plugin {
  
               case DOKU_LEXER_UNMATCHED :  $renderer->doc .= $renderer->_xmlEntities($match); break;
               case DOKU_LEXER_EXIT :       $renderer->doc .= "</span>"; break;
+            }
+            return true;
+        }
+        if($mode == 'odt'){
+            list($state, $match) = $data;
+            switch ($state) {
+              case DOKU_LEXER_ENTER :      
+                list($color, $background) = $match;
+                if (class_exists('ODTDocument')) {
+                    $renderer->_odtSpanOpenUseCSS (NULL, 'style="'.$color.$background.'"');
+                }
+                break;
+ 
+              case DOKU_LEXER_UNMATCHED :
+                $renderer->cdata($match);
+                break;
+
+              case DOKU_LEXER_EXIT :
+                if (class_exists('ODTDocument')) {
+                    $renderer->_odtSpanClose();
+                }
+                break;
             }
             return true;
         }

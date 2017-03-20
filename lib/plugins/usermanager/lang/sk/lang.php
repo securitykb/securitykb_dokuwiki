@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Ondrej Végh <ov@vsieti.sk>
  * @author Michal Mesko <michal.mesko@gmail.com>
  * @author exusik@gmail.com
@@ -40,7 +40,7 @@ $lang['delete_ok']             = '%d užívateľov zmazaných';
 $lang['delete_fail']           = '%d chýb vymazania.';
 $lang['update_ok']             = 'Užívateľ úspešne zmenený';
 $lang['update_fail']           = 'Chyba zmeny užívateľa';
-$lang['update_exists']         = 'Chyba zmeny užívateľa, užívateľské meno (%s) už existuje (iné zmeny budú zaznamenané).';
+$lang['update_exists']         = 'Chyba zmeny mena používateľa, používateľské meno (%s) už existuje (iné zmeny budú zaznamenané).';
 $lang['start']                 = 'prvé';
 $lang['prev']                  = 'predošlé';
 $lang['next']                  = 'ďalšie';
@@ -51,7 +51,7 @@ $lang['note_notify']           = 'Notifikačné e-maily iba vtedy, ak dostane u�
 $lang['note_group']            = 'Noví užívatelia budú pridaní do východzej skupiny (%s), ak nie je pre nich špecifikovaná iná skupina.';
 $lang['note_pass']             = 'Heslo bude vygenerované automaticky, ak bude pole prázdne a je zapnutá notifikácia používateľa.';
 $lang['add_ok']                = 'Používateľ úspešne pridaný';
-$lang['add_fail']              = 'Pridávanie užívateľa nebolo úspešné';
+$lang['add_fail']              = 'Pridanie používateľa bolo neúspešné';
 $lang['notify_ok']             = 'Notifikačný e-mail bol poslaný';
 $lang['notify_fail']           = 'Notifikačný e-mail nemohol byť poslaný';
 $lang['import_userlistcsv']    = 'Súbor so zoznamov používateľov (CSV):';

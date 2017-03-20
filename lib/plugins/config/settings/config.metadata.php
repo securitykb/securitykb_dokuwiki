@@ -68,8 +68,14 @@
  *   '_max'        - maximum numeric value, optional for 'numeric' and 'numericopt', ignored by others
  *   '_delimiter'  - string, default '/', a single character used as a delimiter for testing regex input values
  *   '_pregflags'  - string, default 'ui', valid preg pattern modifiers used when testing regex input values, for more
- *                   information see http://uk1.php.net/manual/en/reference.pcre.pattern.modifiers.php
+ *                   information see http://php.net/manual/en/reference.pcre.pattern.modifiers.php
  *   '_multiple'   - bool, allow multiple comma separated email values; optional for 'email', ignored by others
+ *   '_other'      - how to handle other values (not listed in _choices). accepted values: 'always','exists','never'
+ *                   default value 'always'. 'exists' only shows 'other' input field when the setting contains value(s)
+ *                   not listed in choices (e.g. due to manual editing or update changing _choices).  This is safer than
+ *                   'never' as it will not discard unknown/other values.
+ *                   optional for 'multicheckbox', ignored by others
+ *
  *
  * @author    Chris Smith <chris@jalakai.co.uk>
  */
@@ -116,7 +122,7 @@ $meta['fullpath']    = array('onoff','_caution' => 'security');
 $meta['typography']  = array('multichoice','_choices' => array(0,1,2));
 $meta['dformat']     = array('string');
 $meta['signature']   = array('string');
-$meta['showuseras']  = array('multichoice','_choices' => array('loginname','username','email','email_link'));
+$meta['showuseras']  = array('multichoice','_choices' => array('loginname','username','username_link','email','email_link'));
 $meta['toptoclevel'] = array('multichoice','_choices' => array(1,2,3,4,5));   // 5 toc levels
 $meta['tocminheads'] = array('multichoice','_choices' => array(0,1,2,3,4,5,10,15,20));
 $meta['maxtoclevel'] = array('multichoice','_choices' => array(0,1,2,3,4,5));
@@ -131,14 +137,17 @@ $meta['_authentication'] = array('fieldset');
 $meta['useacl']      = array('onoff','_caution' => 'danger');
 $meta['autopasswd']  = array('onoff');
 $meta['authtype']    = array('authtype','_caution' => 'danger');
-$meta['passcrypt']   = array('multichoice','_choices' => array('smd5','md5','apr1','sha1','ssha','lsmd5','crypt','mysql','my411','kmd5','pmd5','hmd5','mediawiki','bcrypt','djangomd5','djangosha1','sha512'));
+$meta['passcrypt']   = array('multichoice','_choices' => array(
+    'smd5','md5','apr1','sha1','ssha','lsmd5','crypt','mysql','my411','kmd5','pmd5','hmd5',
+    'mediawiki','bcrypt','djangomd5','djangosha1','djangopbkdf2_sha1','djangopbkdf2_sha256','sha512'
+));
 $meta['defaultgroup']= array('string');
 $meta['superuser']   = array('string','_caution' => 'danger');
 $meta['manager']     = array('string');
 $meta['profileconfirm'] = array('onoff');
 $meta['rememberme'] = array('onoff');
 $meta['disableactions'] = array('disableactions',
-                                '_choices' => array('backlink','index','recent','revisions','search','subscription','register','resendpwd','profile','profile_delete','edit','wikicode','check'),
+                                '_choices' => array('backlink','index','recent','revisions','search','subscription','register','resendpwd','profile','profile_delete','edit','wikicode','check', 'rss'),
                                 '_combine' => array('subscription' => array('subscribe','unsubscribe'), 'wikicode' => array('source','export_raw')));
 $meta['auth_security_timeout'] = array('numeric');
 $meta['securecookie'] = array('onoff');
@@ -212,6 +221,7 @@ $meta['readdircache'] = array('numeric');
 
 $meta['_network']    = array('fieldset');
 $meta['dnslookups']  = array('onoff');
+$meta['jquerycdn']   = array('multichoice', '_choices' => array(0,'jquery', 'cdnjs'));
 $meta['proxy____host'] = array('string','_pattern' => '#^(|[a-z0-9\-\.+]+)$#i');
 $meta['proxy____port'] = array('numericopt');
 $meta['proxy____user'] = array('string');

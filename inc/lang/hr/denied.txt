@@ -1,5 +1,4 @@
-====== Niste autorizirani ======
+====== Niste ovlašteni ======
 
-Nemate autorizaciju.
+Nemate potrebne ovlasti za nastavak.
 
-Niste li se možda zaboravili prijaviti u aplikaciju?

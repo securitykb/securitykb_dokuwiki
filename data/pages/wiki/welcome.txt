@@ -1,41 +1,30 @@
-~~NOTOC~~
-======= Dokuwiki Pentest Notes Layout ======
-This preconfigured instance of DokuWiki was made to help pentesters perform complete and well-documented pentests. Because DokuWiki doesn't require a database, the entire web root can be stored in a [[http://www.truecrypt.org/|truecrypt]] container to help keep engagement information safe.
+====== Welcome to your new DokuWiki ======
 
-The sidebar on the left is broken up into three different categories, notes, tasks, and knowledge base (kb). The framework makes use of DokuWiki’s [[https://www.dokuwiki.org/namespaces|namespaces]] feature to keep everything organized. The following table provides anoverview of the framework's built in layout:
+Congratulations, your wiki is now up and running. Here are a few more tips to get you started.
 
-^  Notes                                ^^
-| [[notes:pre-engagement]]     | Pre-engagement research is critical to engagement success. Use this area to keep track of what you find before the engagement phase starts.|
-| [[notes:network_wide_actions]]        | Sometimes it can be to much work to document every action taken against each host on it's own page (e.g. nmap scans). Use this page to document network wide actions|
-| [[notes:target_notes]]                | This page should act as the core of engagement notes. Keep a high level list of all hosts, captured credentials, and gathered loot here. Use the tables on this page to help prioritize targets.|
-| Namespace: [[notes:targets:hosts:]]   | Every system that is reviewed should get it's own hosts page (Pages in the host namespace have a default template. [[notes:targets:hosts:example|Click here]] and then create the page to see an example). Keep a record of all actions performed on and against host based targets.|
-| Namespace: [[notes:targets:persons:]] | This namespace acts as the who's who for the engagement. Every targeted, high-value user (e.g. domain admins, business executives, etc...) should get his or her own page.|
-| [[notes:other]]                       | Use this place as a scratch pad for the one-off notes that don't fit anywhere else.|
-^  Tasks                                ^^
-| [[tasks:pre-engagement]]              | High level checklist for critical steps in pre-engagement phase of the test|
-| [[tasks:engagement]]                  | High level checklist for critical steps in engagement phase of the test|
-| [[tasks:post-engagement]]             | High level checklist for critical steps in post-engagement phase of the test|
-^  Knowledge Base (KB)                  ^^
-| Namespace: [[kb:]]                    | This section is coming soon. Eventually, this namespace will act as a set of local cheat sheets for common tools, tactics, and techniques.|
+Enjoy your work with DokuWiki,\\
+-- the developers
 
-====== Helpful Tips ======
-  * To change the menu on the left side, just edit  the [[:sidebar]] page
-  * You can add [[wiki:tags]] to pages to significantly help improve the engagement's organization.
-  * Additional [[doku>plugins|plugins]] and [[doku>templates|templates]] are available at DokuWiki.org
-  * View the [[wiki:syntax]] page to get more information about the wiki's markup language.
-  * Checkout the local [[wiki:dokuwiki]] page for more information on Dokuwiki.
+===== Create your first pages =====
 
+Your wiki needs to have a start page. As long as it doesn't exist, this link will be red: [[:start]].
 
-====== Get Involved ======
-  * It is easy to contribute to the SecurityKB Pentest Notes framework:
-    * Make a fork of the [[https://github.com/securitykb/securitykb_dokuwiki|SecurityKB Dokuwiki Repository]]
-    * Clone your repo to a local system for editing (e.g. git clone <nowiki>https://github.com/<your name>/securitykb_dokuwiki</nowiki>)
-    * Make changes
-    * Use git to push your changes back to Github (e.g. git push)
-    * Open a pull request
-  * For more information on using git with Github check out http://try.github.io
-  * If you want to get involved with the DokuWiki community check out the [[doku>newsletter|DokuWiki Newsletter]] and the [[http://forum.dokuwiki.org|DokuWiki User Forum]] 
+Go on, follow that link and create the page. If you need help with using the syntax you can always refer to the [[wiki:syntax|syntax page]].
 
-====== Get Help ======
-  * Feel free to [[https://github.com/securitykb/securitykb_dokuwiki/issues/new|submit issues]] concerning the SecurityKB Pentest Notes framework instance of Dokuwiki
-  * You may also [[https://github.com/splitbrain/dokuwiki/issues/new|submit issues]] if you think there is a problem with he DokuWiki framework. Before doing this, please download the most recent [[http://download.dokuwiki.org|stable version of Dokuwiki]] to confirm the problem is not with this fork.
+You might also want to use a sidebar. To create it, just edit the [[:sidebar]] page. Everything in that page will be shown in a margin column on the side. Read our [[doku>faq:sidebar|FAQ on sidebars]] to learn more.
+
+Please be aware that not all templates support sidebars.
+
+===== Customize your Wiki =====
+
+Once you're comfortable with creating and editing pages you might want to have a look at the [[this>doku.php?do=admin&page=config|configuration settings]] (be sure to login as superuser first).
+
+You may also want to see what [[doku>plugins|plugins]] and [[doku>templates|templates]] are available at DokuWiki.org to extend the functionality and looks of your DokuWiki installation.
+
+===== Join the Community =====
+
+DokuWiki is an Open Source project that thrives through user contributions. A good way to stay informed on what's going on and to get useful tips in using DokuWiki is subscribing to the [[doku>newsletter]].
+
+The [[http://forum.dokuwiki.org|DokuWiki User Forum]] is an excellent way to get in contact with other DokuWiki users and is just one of the many ways to get [[doku>faq:support|support]].
+
+Of course we'd be more than happy to have you [[doku>teams:getting_involved|getting involved]] with DokuWiki.
